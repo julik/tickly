@@ -1,6 +1,6 @@
 = tickly
 
-Description goes here.
+A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts)
 
 == Contributing to tickly
  
