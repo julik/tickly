@@ -1,0 +1,20 @@
+require 'helper'
+
+class TestSplitArray < Test::Unit::TestCase
+  should "return a standard array unscathed" do
+    assert_equal [1, 2, 3, 4], Tickly.split_array([1,2,3,4])
+  end
+  
+  should "return a split array on nil" do
+    assert_equal [[1, 2],  [3, 4]], Tickly.split_array([1, 2, nil,  3, 4])
+  end
+  
+  class Jock < Array; end
+  
+  should "properly use subclasses" do
+    s =  Tickly.split_array(Jock.new([1, 2, nil,  3, 4]))
+    assert_kind_of Jock, s
+    assert_kind_of Jock, s[0]
+  end
+  
+end

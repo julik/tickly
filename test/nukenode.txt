@@ -1,0 +1,11 @@
+set cut_paste_input [stack 0]
+version 6.3 v4
+push $cut_paste_input
+Blur {
+ size {{curve x1 0 x20 1.7 x33 3.9}}
+ name Blur1
+ label "With \"Escapes\""
+ selected true
+ xpos -353
+ ypos -33
+}

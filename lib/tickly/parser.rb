@@ -1,34 +1,63 @@
 require 'stringio'
 
 module Tickly
-
+  
+  module ToTCL
+    def to_tcl(e)
+    end
+  end
+  
   # Represents an expression between curly braces (within which no text substitution will be done)
   # like  { 1 2 3 }
   class LiteralExpr < Array
+    include ToTCL
+    def to_tcl
+      '{%s}' % map{|e| e.to_tcl rescue e.to_s }.join(' ')
+    end
   end
 
   # Represents an expression between square brackets (where text substitution will be done)
   # like  [1 2 3]
   class StringExpr < Array
+    def to_tcl
+      '[%s]' % map{|e| e.to_tcl rescue e.to_s }.join(' ')
+    end
   end
 
   class Parser
   
     ESC = 92.chr # Backslash (\)
-  
-    def parse(io_or_str, stop_char = nil)
-      io = io_or_str.respond_to?(:readchar) ? io : StringIO.new(io_or_str)
+    
+    def parse_str(io, stop_char)
+      buf = ''
+      until io.eof?
+        c = io.readchar
+        if c == stop_char && buf[-1] != ESC
+          return buf
+        elsif buf[-1] == ESC # Eat out the escape char
+          buf = buf[0..-2]
+          buf << c
+        else
+          buf << c
+        end
+      end
+      
+      return buf
+    end
+    
+    def parse(io_or_str, stop_char = nil, expr_class = LiteralExpr)
+      io = io_or_str.respond_to?(:readchar) ? io_or_str : StringIO.new(io_or_str)
     
       # A standard stack is an expression that does not evaluate to a string
-      stack = LiteralExpr.new
+      stack = expr_class.new
       buf = ''
       until io.eof?
         char = io.readchar
-      
+        
         if buf[-1] != ESC
-          if char == stop_char
+          if char == stop_char # Bail out of a subexpr
             stack << buf if (buf.length > 0)
-            return deflatten(stack)
+            return cleanup(stack)
           elsif char == " " || char == "\n" # Space
             if buf.length > 0
               stack << buf
@@ -39,20 +68,16 @@ module Tickly
             end
           elsif char == '[' # Opens a new string expression
             stack << buf if (buf.length > 0)
-            inner_expr = parse(io, ']')
-            stack.push(LiteralExpr.new(inner_expr))
+            stack << parse(io, ']', StringExpr)
           elsif char == '{' # Opens a new literal expression  
             stack << buf if (buf.length > 0)
-            inner_expr = parse(io, '}')
-            stack.push(LiteralExpr.new(inner_expr))
+            stack << parse(io, '}', LiteralExpr)
           elsif char == '"'
             stack << buf if (buf.length > 0)
-            str = parse(io, '"')
-            stack.push(str.join(' '))
+            stack << parse_str(io, '"')
           elsif char == "'"
             stack << buf if (buf.length > 0)
-            str = parse(io, "'")
-            stack.push(str.join(' '))
+            stack << parse_str(io, "'")
           else
             buf << char
           end
@@ -64,14 +89,11 @@ module Tickly
       # Ramass any remaining buffer contents
       stack << buf if (buf.length > 0)
     
-      # Eliminate line breaks which signify expression separators
-      #    deflatten(stack)
-      # Expand one-element expressions of the same kind
-      expand(stack)
+      cleanup(stack)
     end
-  
-    def expand(stack)
-      stack.map do | element |
+    
+    def expand_one_elements(stack)
+      stack.map! do | element |
         if element.is_a?(Array) && element.length == 1 && element[0].class == element.class
           element[0]
         else
@@ -79,18 +101,25 @@ module Tickly
         end
       end
     end
-  
-    def deflatten(stack)
-      new_stack = []
-      new_stack << []
-      stack.each do | elem |
-        if elem.nil?
-          new_stack << []
-        else
-          new_stack[-1] << elem
-        end
-      end
-      new_stack.reject{|e| e == []}
+    
+    def remove_empty_elements(stack)
+      stack.reject! {|e| [StringExpr, LiteralExpr].include?(e.class) && e.empty? }
     end
+    
+    def cleanup(stack)
+      # Expand one-element expressions of the same class
+      #expand_one_elements(stack)
+      
+      # Remove empty subexprs
+      remove_empty_elements(stack)
+      
+      # Squeeze out the leading and trailing nils
+      stack.delete_at(0) while (stack.any? && stack[0].nil?)
+      stack.delete_at(-1) while (stack.any? && stack[-1].nil?)
+      
+      # Convert line breaks into subexpressions
+      Tickly.split_array(stack)
+    end
+  
   end
 end
