@@ -2,28 +2,6 @@ require 'stringio'
 
 module Tickly
   
-  module ToTCL
-    def to_tcl(e)
-    end
-  end
-  
-  # Represents an expression between curly braces (within which no text substitution will be done)
-  # like  { 1 2 3 }
-  class LiteralExpr < Array
-    include ToTCL
-    def to_tcl
-      '{%s}' % map{|e| e.to_tcl rescue e.to_s }.join(' ')
-    end
-  end
-
-  # Represents an expression between square brackets (where text substitution will be done)
-  # like  [1 2 3]
-  class StringExpr < Array
-    def to_tcl
-      '[%s]' % map{|e| e.to_tcl rescue e.to_s }.join(' ')
-    end
-  end
-
   class Parser
   
     ESC = 92.chr # Backslash (\)
