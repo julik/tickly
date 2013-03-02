@@ -23,13 +23,18 @@ module Tickly
     def ==(another)
       another.to_a == to_a
     end
+    
+    def inspect
+      @e.map{|e| e.inspect }.join(', ')
+    end
+    
   end
   
   # Represents an expression between curly braces (within which no text substitution will be done)
   # like  { 1 2 3 }
   class LiteralExpr < Expr
     def inspect
-      "le%s" % @e.inspect
+      "le(%s)" % super
     end
   end
 
@@ -37,9 +42,21 @@ module Tickly
   # like  [1 2 3]
   class StringExpr < Expr
     def inspect
-      "se%s" % @e.inspect
+      "se(%s)" % super
     end
   end
+  
+  # Provides the methods for quickly emitting the LiteralExpr and StringExpr objects
+  module Emitter
+    def le(*elems)
+      LiteralExpr.new(elems)
+    end
+    
+    def se(*elems)
+      LiteralExpr.new(elems)
+    end
+  end
+  
   
   def self.to_tcl(e)
     if e.is_a?(Tickly::LiteralExpr)
