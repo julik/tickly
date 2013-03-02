@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + "/tickly/evaluator"
 require 'forwardable'
 
 module Tickly
+  VERSION = '0.0.1'
   
   # Represents a TCL expression with it's arguments (in curly or square braces)
   class Expr

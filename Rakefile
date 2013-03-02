@@ -2,6 +2,8 @@
 
 require 'rubygems'
 require 'bundler'
+require File.dirname(__FILE__) + "/lib/tickly"
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -14,6 +16,7 @@ require 'rake'
 require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.version = Tickly::VERSION
   gem.name = "tickly"
   gem.homepage = "http://github.com/julik/tickly"
   gem.license = "MIT"
