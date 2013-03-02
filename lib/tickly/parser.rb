@@ -6,9 +6,17 @@ module Tickly
 
     # Parses a piece of TCL and returns it converted into internal expression
     # structures (nested StringExpr or LiteralExp objects).
-    def parse(io_or_str, stop_char = nil, expr_class = LiteralExpr)
+    def parse(io_or_str)
       io = io_or_str.respond_to?(:readchar) ? io_or_str : StringIO.new(io_or_str)
+      sub_parse(io)
+    end
     
+    private
+    
+    # Parse from a passed IO object either until an unescaped stop_char is reached
+    # or until the IO is exhausted. The last argument is the class used to
+    # compose the subexpression being parsed
+    def sub_parse(io, stop_char = nil, expr_class = LiteralExpr)
       # A standard stack is an expression that does not evaluate to a string
       stack = expr_class.new
       buf = ''
@@ -24,15 +32,15 @@ module Tickly
               stack << buf
               buf = ''
             end
-            if char == "\n" # Introduce a stack separator!
+            if char == "\n" # Introduce a stack separator! This is a new line
               stack << nil
             end
           elsif char == '[' # Opens a new string expression
             stack << buf if (buf.length > 0)
-            stack << parse(io, ']', StringExpr)
+            stack << sub_parse(io, ']', StringExpr)
           elsif char == '{' # Opens a new literal expression  
             stack << buf if (buf.length > 0)
-            stack << parse(io, '}', LiteralExpr)
+            stack << sub_parse(io, '}', LiteralExpr)
           elsif char == '"'
             stack << buf if (buf.length > 0)
             stack << parse_str(io, '"')
