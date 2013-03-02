@@ -15,7 +15,8 @@ module Tickly
     
     # Parse from a passed IO object either until an unescaped stop_char is reached
     # or until the IO is exhausted. The last argument is the class used to
-    # compose the subexpression being parsed
+    # compose the subexpression being parsed. The subparser is reentrant and not
+    # destructive for the object containing it.
     def sub_parse(io, stop_char = nil, expr_class = LiteralExpr)
       # A standard stack is an expression that does not evaluate to a string
       stack = expr_class.new
@@ -72,7 +73,7 @@ module Tickly
         if c == stop_char && buf[-1] != ESC
           return buf
         elsif buf[-1] == ESC # Eat out the escape char
-          buf = buf[0..-2]
+          buf = buf[0..-2] # Trim the escape character at the end of the buffer
           buf << c
         else
           buf << c
@@ -82,9 +83,9 @@ module Tickly
       return buf
     end
     
-    def expand_one_elements(stack)
-      stack.map! do | element |
-        if element.is_a?(Array) && element.length == 1 && element[0].class == element.class
+    def expand_one_elements!(expr)
+      expr.map! do | element |
+        if expr?(element) && element.length == 1 && element[0].class == element.class
           element[0]
         else
           element
@@ -92,23 +93,30 @@ module Tickly
       end
     end
     
-    def remove_empty_elements(stack)
-      stack.reject! {|e| [StringExpr, LiteralExpr].include?(e.class) && e.empty? }
+    def remove_empty_elements!(expr)
+      expr.reject! {|e|  expr?(e) && e.empty? }
     end
     
-    def cleanup(stack)
+    # Tells whether a passed object is a StringExpr or LiteralExpr
+    def expr?(something)
+      [StringExpr, LiteralExpr].include?(something.class)
+    end
+    
+    # Cleans up a subexpression stack. Currently it only removes nil objects
+    # in-between items (which act as line separators)
+    def cleanup(expr)
       # Expand one-element expressions of the same class
-      #expand_one_elements(stack)
+      #expand_one_elements!(expr)
       
       # Remove empty subexprs
-      #remove_empty_elements(stack)
+      #remove_empty_elements!(expr)
       
       # Squeeze out the leading and trailing nils
-      stack.delete_at(0) while (stack.any? && stack[0].nil?)
-      stack.delete_at(-1) while (stack.any? && stack[-1].nil?)
+      expr.delete_at(0) while (expr.any? && expr[0].nil?)
+      expr.delete_at(-1) while (expr.any? && expr[-1].nil?)
       
       # Convert line breaks into subexpressions
-      Tickly.split_array(stack)
+      Tickly.split_array(expr)
     end
   
   end
