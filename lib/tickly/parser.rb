@@ -7,11 +7,13 @@ module Tickly
     # Parses a piece of TCL and returns it converted into internal expression
     # structures (nested StringExpr or LiteralExp objects).
     def parse(io_or_str)
-      io = io_or_str.respond_to?(:readchar) ? io_or_str : StringIO.new(io_or_str)
+      io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       sub_parse(io)
     end
     
     private
+    
+    LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
     
     # Parse from a passed IO object either until an unescaped stop_char is reached
     # or until the IO is exhausted. The last argument is the class used to
@@ -22,9 +24,9 @@ module Tickly
       stack = expr_class.new
       buf = ''
       until io.eof?
-        char = io.readchar
+        char = io.read(1)
         
-        if buf[-1] != ESC
+        if buf[LAST_CHAR] != ESC
           if char == stop_char # Bail out of a subexpr
             stack << buf if (buf.length > 0)
             return cleanup(stack)
@@ -69,10 +71,10 @@ module Tickly
     def parse_str(io, stop_char)
       buf = ''
       until io.eof?
-        c = io.readchar
-        if c == stop_char && buf[-1] != ESC
+        c = io.read(1)
+        if c == stop_char && buf[LAST_CHAR] != ESC
           return buf
-        elsif buf[-1] == ESC # Eat out the escape char
+        elsif buf[LAST_CHAR] == ESC # Eat out the escape char
           buf = buf[0..-2] # Trim the escape character at the end of the buffer
           buf << c
         else
