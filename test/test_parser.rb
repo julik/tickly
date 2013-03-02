@@ -97,4 +97,37 @@ class TestParser < Test::Unit::TestCase
     )
     assert_equal blur, p[4]
   end
+  
+  should 'parse a Nuke script with indentations' do
+    f = File.open(File.dirname(__FILE__) + "/nuke_group.txt")
+    p = P.parse(f)
+    grp = le(
+      le("set", "cut_paste_input", se("stack", "0")),
+      le("version", "6.3", "v4"),
+      le("Group",
+        le(
+          le("inputs", "0"),
+          le("name", "Group1"),
+          le("selected", "true")
+          )
+        ),
+      le("CheckerBoard2",
+        le(
+          le("inputs", "0"),
+          le("name", "CheckerBoard1")
+        )
+      ),
+      le("Blur",
+        le(
+          le("size", "42.5"),
+          le("name", "Blur1")
+        )
+      ),
+      le("Output",
+        le("name", "Output1")
+      ),
+      le("end_group")
+    )
+    assert_equal grp, p
+  end
 end
