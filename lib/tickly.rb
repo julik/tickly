@@ -3,6 +3,7 @@ require 'forwardable'
 
 module Tickly
   
+  # Represents a TCL expression with it's arguments (in curly or square braces)
   class Expr
     extend Forwardable
     
