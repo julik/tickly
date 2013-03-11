@@ -3,13 +3,13 @@ require File.dirname(__FILE__) + "/tickly/evaluator"
 require 'forwardable'
 
 module Tickly
-  VERSION = '0.0.2'
+  VERSION = '0.0.3'
   
   # Represents a TCL expression with it's arguments (in curly or square braces)
   class Expr
     extend Forwardable
     
-    def_delegators :@e, :push, :<<, :any?, :reject!, :map!, :[], :delete_at, :include?, :each, :empty?, :join, :length
+    def_delegators :@e, :push, :<<, :any?, :reject!, :map!, :[], :delete_at, :include?, :each, :each_with_index, :empty?, :join, :length
     
     def initialize(elements = [])
       @e = elements
@@ -79,13 +79,28 @@ module Tickly
     subarrays = arr.class.new
     subarrays.push(arr.class.new)
     
-    arr.each do | element |
-      if element == separator
+    arr.each_with_index do | element, i |
+      if element == separator && subarrays.length > 0 && subarrays[-1].any? && (i < (arr.length - 1))
         subarrays.push(arr.class.new)
+      elsif element == separator
+        # toss it
       else
         subarrays[-1].push(element)
       end
     end
     return subarrays
   end
+  
+  def self.singularize_nils_in(arr)
+    new_arr = arr.class.new
+    arr.each_with_index do | elem, i |
+      if elem.nil? && arr[i-1].nil? && i > 0
+        # pass
+      else
+        new_arr << elem
+      end
+    end
+    new_arr
+  end
+  
 end

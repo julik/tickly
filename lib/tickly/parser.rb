@@ -85,20 +85,6 @@ module Tickly
       return buf
     end
     
-    def expand_one_elements!(expr)
-      expr.map! do | element |
-        if expr?(element) && element.length == 1 && element[0].class == element.class
-          element[0]
-        else
-          element
-        end
-      end
-    end
-    
-    def remove_empty_elements!(expr)
-      expr.reject! {|e|  expr?(e) && e.empty? }
-    end
-    
     # Tells whether a passed object is a StringExpr or LiteralExpr
     def expr?(something)
       [StringExpr, LiteralExpr].include?(something.class)
@@ -107,18 +93,10 @@ module Tickly
     # Cleans up a subexpression stack. Currently it only removes nil objects
     # in-between items (which act as line separators)
     def cleanup(expr)
-      # Expand one-element expressions of the same class
-      #expand_one_elements!(expr)
-      
-      # Remove empty subexprs
-      #remove_empty_elements!(expr)
-      
-      # Squeeze out the leading and trailing nils
-      expr.delete_at(0) while (expr.any? && expr[0].nil?)
-      expr.delete_at(-1) while (expr.any? && expr[-1].nil?)
-      
+      # Ensure multiple consecutive line breaks are ignored
+      no_multiple_breaks = Tickly.singularize_nils_in(expr)
       # Convert line breaks into subexpressions
-      Tickly.split_array(expr)
+      Tickly.split_array(no_multiple_breaks)
     end
   
   end

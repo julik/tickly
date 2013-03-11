@@ -1,0 +1,19 @@
+set cut_paste_input [stack 0]
+version 6.3 v4
+Group {
+ inputs 0
+ name Group1
+ selected true
+}
+ CheckerBoard2 {
+  inputs 0
+  name CheckerBoard1
+ }
+ Blur {
+  size 42.5
+  name Blur1
+ }
+ Output {
+  name Output1
+ }
+end_group

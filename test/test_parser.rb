@@ -53,7 +53,7 @@ class TestParser < Test::Unit::TestCase
   end
   
   should 'parse a Nuke node' do
-    f = File.open(File.dirname(__FILE__) + "/nukenode.txt")
+    f = File.open(File.dirname(__FILE__) + "/test-data/nukenode.txt")
     p = P.parse(f)
     script = le(
       le("set", "cut_paste_input", se("stack", "0")),
@@ -78,7 +78,7 @@ class TestParser < Test::Unit::TestCase
   end
   
   should 'parse a simple Nuke script and internalize the RotoPaint in it' do
-    f = File.open(File.dirname(__FILE__) + "/three_nodes_and_roto.txt")
+    f = File.open(File.dirname(__FILE__) + "/test-data/three_nodes_and_roto.txt")
     p = P.parse(f)
     # Should pass through the rotopaint node and get to the blur properly
     blur = le("Blur", 
@@ -99,7 +99,7 @@ class TestParser < Test::Unit::TestCase
   end
   
   should 'parse a Nuke script with indentations' do
-    f = File.open(File.dirname(__FILE__) + "/nuke_group.txt")
+    f = File.open(File.dirname(__FILE__) + "/test-data/nuke_group.txt")
     p = P.parse(f)
     grp = le(
       le("set", "cut_paste_input", se("stack", "0")),
@@ -124,10 +124,25 @@ class TestParser < Test::Unit::TestCase
         )
       ),
       le("Output",
-        le("name", "Output1")
+        le(
+          le("name", "Output1")
+        )
       ),
       le("end_group")
     )
     assert_equal grp, p
   end
+  
+  def test_one_node_parsing
+    f = File.open(File.dirname(__FILE__) + "/test-data/one_node_with_one_param.txt")
+    p = P.parse(f)
+    ref = le("SomeNode",
+        le(
+          le("foo", "bar")
+        )
+    )
+    
+    assert_equal ref, p
+  end
+  
 end
