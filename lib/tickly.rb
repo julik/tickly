@@ -73,6 +73,9 @@ module Tickly
     end
   end
   
+  # Splits the passed Array-like object into sub-arrays of the same class,
+  # delimited by the passed separator. Note that when the separators occur at the beginning or at the end of
+  # the passed object they will be discarded
   def self.split_array(arr, separator = nil)
     return arr unless arr.include?(separator)
     
@@ -91,6 +94,8 @@ module Tickly
     return subarrays
   end
   
+  # Removes consecutive nils from the passed Array-like object and returns a new one with all consecutive nils reduced
+  # to one nil
   def self.singularize_nils_in(arr)
     new_arr = arr.class.new
     arr.each_with_index do | elem, i |
