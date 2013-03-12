@@ -23,7 +23,6 @@ module Tickly
     private
     
     LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
-    EXPR_BREAKS = [";", "\n"]
     
     # Parse from a passed IO object either until an unescaped stop_char is reached
     # or until the IO is exhausted. The last argument is the class used to
@@ -33,7 +32,7 @@ module Tickly
       # A standard stack is an expression that does not evaluate to a string
       stack = expr_class.new
       buf = ''
-      last_char_was_expr_break = false
+      last_char_was_linebreak = false
       until io.eof?
         char = io.read(1)
         
@@ -46,9 +45,9 @@ module Tickly
               stack << buf
               buf = ''
             end
-            if EXPR_BREAKS.include?(char) # Introduce a stack separator! This is a new line
-              unless last_char_was_expr_break
-                last_char_was_expr_break = true
+            if char == "\n" # Introduce a stack separator! This is a new line
+              unless last_char_was_linebreak
+                last_char_was_linebreak = true
                 
                 # Take some action. We need to wrap the last
                 if stack.any?
@@ -59,26 +58,26 @@ module Tickly
             end
           elsif char == '[' # Opens a new string expression
             stack << buf if (buf.length > 0)
-            last_char_was_expr_break = false
+            last_char_was_linebreak = false
             stack << sub_parse(io, ']', StringExpr, stack_depth + 1)
           elsif char == '{' # Opens a new literal expression  
             stack << buf if (buf.length > 0)
-            last_char_was_expr_break = false
+            last_char_was_linebreak = false
             stack << sub_parse(io, '}', LiteralExpr, stack_depth + 1)
           elsif char == '"'
             stack << buf if (buf.length > 0)
-            last_char_was_expr_break = false
+            last_char_was_linebreak = false
             stack << parse_str(io, '"')
           elsif char == "'"
             stack << buf if (buf.length > 0)
-            last_char_was_expr_break = false
+            last_char_was_linebreak = false
             stack << parse_str(io, "'")
           else
-            last_char_was_expr_break = false
+            last_char_was_linebreak = false
             buf << char
           end
         else
-          last_char_was_expr_break = false
+          last_char_was_linebreak = false
           buf << char
         end
       end
