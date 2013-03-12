@@ -20,6 +20,10 @@ module Tickly
       sub_parse(io)
     end
     
+    # Override this to remove any unneeded subexpressions
+    def expand_subexpr!(expr, at_depth)
+    end
+    
     private
     
     LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
@@ -41,7 +45,7 @@ module Tickly
             stack << buf if (buf.length > 0)
             # Chip away the tailing linebreak if it's there
             chomp!(stack)
-            return cleanup(stack, stack_depth)
+            return stack
           elsif char == " " || char == "\n" # Space
             if buf.length > 0
               stack << buf
@@ -89,14 +93,8 @@ module Tickly
       # Chip awiy the trailing null
       chomp!(stack)
       
-      cleanup(stack, stack_depth)
+      return stack
     end
-    
-    # Override this to remove any unneeded subexpressions
-    def expand_subexpr!(expr)
-    end
-    
-    private
     
     ESC = 92.chr # Backslash (\)
     
@@ -111,7 +109,7 @@ module Tickly
       # into a subexpression and carry on.
       unless previous_i
         subexpr = stack
-        expand_subexpr!(subexpr)
+        expand_subexpr!(subexpr, stack_depth + 1)
         return [subexpr] + [nil]
       end
       
@@ -121,7 +119,7 @@ module Tickly
       subexpr = stack[previous_i+1..-1]
       
       # Use expand_subexpr! to trim away any fat that we don't need
-      expand_subexpr!(subexpr)
+      expand_subexpr!(subexpr, stack_depth + 1)
       
       return stack[0...previous_i] + [subexpr] + [nil]
     end
@@ -141,17 +139,6 @@ module Tickly
       end
       
       return buf
-    end
-    
-    # Tells whether a passed object is a StringExpr or LiteralExpr
-    def expr?(something)
-      something.is_a?(Array) && something[0].is_a?(Symbol)
-    end
-    
-    # Cleans up a subexpression stack. Currently it only removes nil objects
-    # in-between items (which act as line separators)
-    def cleanup(expr, stack_depth)
-      expr
     end
     
   end
