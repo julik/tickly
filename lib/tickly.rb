@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/tickly/evaluator"
 require 'forwardable'
 
 module Tickly
-  VERSION = '0.0.3'
+  VERSION = '0.0.4'
   
   # Provides the methods for quickly emitting the LiteralExpr and StringExpr objects
   module Emitter
