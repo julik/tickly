@@ -4,15 +4,6 @@ module Tickly
   
   class Parser
     
-    # If you set this to an array of node names that you want to preserve,
-    # all the other nodes will be discarded during parsing. This helps to reduce
-    # memory consumption during parsing
-    # since you are likely to onyl be interested in specific node classes.
-    #
-    #  p.specific_nodes = %w( Tracker3 Tracker4 )
-    #
-    attr_accessor :specific_nodes
-    
     # Parses a piece of TCL and returns it converted into internal expression
     # structures (nested StringExpr or LiteralExpr objects).
     def parse(io_or_str)
