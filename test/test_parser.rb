@@ -99,8 +99,7 @@ class TestParser < Test::Unit::TestCase
     assert_equal blur, p[4]
   end
   
-  #should 'parse a Nuke script with indentations' do
-  def test_shmuck
+  def test_parsing_nuke_script_with_indentations
     f = File.open(File.dirname(__FILE__) + "/test-data/nuke_group.txt")
     p = P.parse(f)
     grp = le(
