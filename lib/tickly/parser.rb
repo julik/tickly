@@ -39,6 +39,8 @@ module Tickly
         if buf[LAST_CHAR] != ESC
           if char == stop_char # Bail out of a subexpr
             stack << buf if (buf.length > 0)
+            # Chip away the tailing linebreak if it's there
+            chomp!(stack)
             return cleanup(stack, stack_depth)
           elsif char == " " || char == "\n" # Space
             if buf.length > 0
@@ -46,14 +48,9 @@ module Tickly
               buf = ''
             end
             if char == "\n" # Introduce a stack separator! This is a new line
-              unless last_char_was_linebreak
+              if stack.any? && !last_char_was_linebreak
                 last_char_was_linebreak = true
-                
-                # Take some action. We need to wrap the last
-                if stack.any?
-                  #puts "Sutuation at last linebreak: #{stack.inspect} @ #{stack_depth}"
-                  stack << nil
-                end
+                stack = handle_expr_terminator(stack, stack_depth)
               end
             end
           elsif char == '[' # Opens a new string expression
@@ -84,13 +81,50 @@ module Tickly
     
       # Ramass any remaining buffer contents
       stack << buf if (buf.length > 0)
-    
+      
+      # Handle any remaining subexpressions
+      if stack.include?(nil)
+        stack = handle_expr_terminator(stack, stack_depth)
+      end
+      # Chip awiy the trailing null
+      chomp!(stack)
+      
       cleanup(stack, stack_depth)
+    end
+    
+    # Override this to remove any unneeded subexpressions
+    def expand_subexpr!(expr)
     end
     
     private
     
     ESC = 92.chr # Backslash (\)
+    
+    def chomp!(stack)
+      stack.delete_at(-1) if stack.any? && stack[-1].nil?
+    end
+    
+    def handle_expr_terminator(stack, stack_depth)
+      # Figure out whether there was a previous expr terminator
+      previous_i = stack.index(nil)
+      # If there were none, just get this over with. Wrap the stack contents
+      # into a subexpression and carry on.
+      unless previous_i
+        subexpr = stack
+        expand_subexpr!(subexpr)
+        return [subexpr] + [nil]
+      end
+      
+      # Now, if there was one, we are the next subexpr in line that just terminated.
+      # What we need to do is pick out all the elements from that terminator onwards
+      # and wrap them.
+      subexpr = stack[previous_i+1..-1]
+      
+      # Use expand_subexpr! to trim away any fat that we don't need
+      expand_subexpr!(subexpr)
+      
+      return stack[0...previous_i] + [subexpr] + [nil]
+    end
     
     def parse_str(io, stop_char)
       buf = ''
@@ -117,7 +151,7 @@ module Tickly
     # Cleans up a subexpression stack. Currently it only removes nil objects
     # in-between items (which act as line separators)
     def cleanup(expr, stack_depth)
-      Tickly.split_array(expr)
+      expr
     end
     
   end
