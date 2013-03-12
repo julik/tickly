@@ -41,18 +41,19 @@ class TestParser < Test::Unit::TestCase
     assert_equal le(se("1", "2", "3"), se("3", "4", "5", "foo")), p
   end
   
-  should "parse multiline statements as literal expressions" do
+  def test_parse_multiline_statements_as_literal_expressions
     p = P.parse("2\n2")
+    
     assert_equal "{{2} {2}}", Tickly.to_tcl(p)
   end
   
-  should 'parse expression' do
+  def test_parse_expr
     expr = '{4 + 5}'
     p = P.parse(expr)
     assert_equal le(le("4", "+", "5")), p
   end
   
-  should 'parse a Nuke node' do
+  def test_parsing_a_nuke_node
     f = File.open(File.dirname(__FILE__) + "/test-data/nukenode.txt")
     p = P.parse(f)
     script = le(
@@ -98,7 +99,8 @@ class TestParser < Test::Unit::TestCase
     assert_equal blur, p[4]
   end
   
-  should 'parse a Nuke script with indentations' do
+  #should 'parse a Nuke script with indentations' do
+  def test_shmuck
     f = File.open(File.dirname(__FILE__) + "/test-data/nuke_group.txt")
     p = P.parse(f)
     grp = le(

@@ -94,18 +94,4 @@ module Tickly
     return subarrays
   end
   
-  # Removes consecutive nils from the passed Array-like object and returns a new one with all consecutive nils reduced
-  # to one nil
-  def self.singularize_nils_in(arr)
-    new_arr = arr.class.new
-    arr.each_with_index do | elem, i |
-      if elem.nil? && arr[i-1].nil? && i > 0
-        # pass
-      else
-        new_arr << elem
-      end
-    end
-    new_arr
-  end
-  
 end

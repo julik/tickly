@@ -20,9 +20,4 @@ class TestSplitArray < Test::Unit::TestCase
     assert_kind_of Jock, s
     assert_kind_of Jock, s[0]
   end
-  
-  should 'squeeze nils out' do
-    s = Tickly.singularize_nils_in([nil, nil, 1,2,3,4, nil, nil, 456, nil, 9,nil,nil])
-    assert_equal [nil, 1,2,3,4, nil, 456, nil, 9, nil], s
-  end
 end

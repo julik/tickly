@@ -48,7 +48,12 @@ module Tickly
             if char == "\n" # Introduce a stack separator! This is a new line
               unless last_char_was_linebreak
                 last_char_was_linebreak = true
-                stack << nil
+                
+                # Take some action. We need to wrap the last
+                if stack.any?
+                  #puts "Sutuation at last linebreak: #{stack.inspect} @ #{stack_depth}"
+                  stack << nil
+                end
               end
             end
           elsif char == '[' # Opens a new string expression
