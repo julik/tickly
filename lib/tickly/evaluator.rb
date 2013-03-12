@@ -18,7 +18,8 @@ module Tickly
         handler_class = @node_handlers.find{|e| unconst_name(e) == expr[0]}
         handler_arguments = expr[1]
         hash_of_args = {}
-        expr[1].map do | e |
+        # Use 1..-1 to skip the curly brace symbol
+        expr[1][1..-1].map do | e |
           # The name of the command is the first element, always
           hash_of_args[e[0]] = e[1]
         end
@@ -41,7 +42,7 @@ module Tickly
     end
     
     def has_subcommand?(expr)
-      expr[1].is_a?(LiteralExpr)
+      expr[1][0] == :c
     end
   end
 end

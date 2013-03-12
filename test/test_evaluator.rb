@@ -16,7 +16,7 @@ class TestEvaluator < Test::Unit::TestCase
   end
   
   should "not send anything to the handler when the expr does not conform to the standard" do
-    stack = le("ShouldNotBeInstantiated")
+    stack = e("ShouldNotBeInstantiated")
     e = Tickly::Evaluator.new
     e.add_node_handler_class(ShouldNotBeInstantiated)
     assert_nothing_raised { e.evaluate(stack) }
@@ -29,8 +29,8 @@ class TestEvaluator < Test::Unit::TestCase
     end
   end
   
-  should "instantiate the handler class" do
-    stack = le("SomeNode", le(le("foo", "bar"), le("baz", "bad")))
+  def test_instantiates_handler_class
+    stack = e("SomeNode", le(e("foo", "bar"), e("baz", "bad")))
     e = Tickly::Evaluator.new
     e.add_node_handler_class(SomeNode)
     node = e.evaluate(stack)

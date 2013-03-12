@@ -28,9 +28,9 @@ module Tickly
     # or until the IO is exhausted. The last argument is the class used to
     # compose the subexpression being parsed. The subparser is reentrant and not
     # destructive for the object containing it.
-    def sub_parse(io, stop_char = nil, expr_class = LiteralExpr, stack_depth = 0)
+    def sub_parse(io, stop_char = nil, stack_depth = 0)
       # A standard stack is an expression that does not evaluate to a string
-      stack = expr_class.new
+      stack = []
       buf = ''
       last_char_was_linebreak = false
       until io.eof?
@@ -59,11 +59,11 @@ module Tickly
           elsif char == '[' # Opens a new string expression
             stack << buf if (buf.length > 0)
             last_char_was_linebreak = false
-            stack << sub_parse(io, ']', StringExpr, stack_depth + 1)
+            stack << [:b] + sub_parse(io, ']', stack_depth + 1)
           elsif char == '{' # Opens a new literal expression  
             stack << buf if (buf.length > 0)
             last_char_was_linebreak = false
-            stack << sub_parse(io, '}', LiteralExpr, stack_depth + 1)
+            stack << [:c] + sub_parse(io, '}', stack_depth + 1)
           elsif char == '"'
             stack << buf if (buf.length > 0)
             last_char_was_linebreak = false
@@ -111,22 +111,13 @@ module Tickly
     
     # Tells whether a passed object is a StringExpr or LiteralExpr
     def expr?(something)
-      [StringExpr, LiteralExpr].include?(something.class)
+      something.is_a?(Array) && something[0].is_a?(Symbol)
     end
     
     # Cleans up a subexpression stack. Currently it only removes nil objects
     # in-between items (which act as line separators)
     def cleanup(expr, stack_depth)
       Tickly.split_array(expr)
-    end
-    
-    def expr_is_node?(expr, stack_depth)
-      stack_depth == 0 && expr[0].is_a?(String) && expr[1].is_a?(LiteralExpr)
-    end
-    
-    def trim(expr, stack_depth)
-      return expr unless expr_is_node?(expr, stack_depth)
-      
     end
     
   end

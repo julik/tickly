@@ -5,66 +5,25 @@ require 'forwardable'
 module Tickly
   VERSION = '0.0.3'
   
-  # Represents a TCL expression with it's arguments (in curly or square braces)
-  class Expr
-    extend Forwardable
-    
-    def_delegators :@e, :push, :<<, :any?, :reject!, :map!, :[], :delete_at, :include?, :each, :each_with_index, :empty?, :join, :length
-    
-    def initialize(elements = [])
-      @e = elements
-    end
-    
-    def map(&blk)
-      self.class.new(@e.map(&blk))
-    end
-    
-    def to_a
-      @e
-    end
-    
-    def ==(another)
-      another.to_a == to_a
-    end
-    
-    def inspect
-      @e.map{|e| e.inspect }.join(', ')
-    end
-    
-  end
-  
-  # Represents an expression between curly braces (within which no text substitution will be done)
-  # like  { 1 2 3 }
-  class LiteralExpr < Expr
-    def inspect
-      "le(%s)" % super
-    end
-  end
-
-  # Represents an expression between square brackets (where text substitution will be done)
-  # like  [1 2 3]
-  class StringExpr < Expr
-    def inspect
-      "se(%s)" % super
-    end
-  end
-  
   # Provides the methods for quickly emitting the LiteralExpr and StringExpr objects
   module Emitter
     def le(*elems)
-      LiteralExpr.new(elems)
+      [:c] + elems
+    end
+    
+    def e(*elems)
+      elems
     end
     
     def se(*elems)
-      LiteralExpr.new(elems)
+      [:b] + elems
     end
   end
   
-  
   def self.to_tcl(e)
-    if e.is_a?(Tickly::LiteralExpr)
+    if e.is_a?(Array) && e[0] == :c
       '{%s}' % e.map{|e| to_tcl(e)}.join(' ')
-    elsif e.is_a?(Tickly::StringExpr)
+    elsif e.is_a?(Array) && e[0] == :b
       '[%s]' % e.map{|e| to_tcl(e)}.join(' ')
     elsif e.is_a?(String) && (e.include?('"') || e.include?("'"))
       e.inspect
