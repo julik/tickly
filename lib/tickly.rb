@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/tickly/evaluator"
 require 'forwardable'
 
 module Tickly
-  VERSION = '0.0.6'
+  VERSION = '0.0.7'
   
   # Provides the methods for quickly emitting the expression arrays,
   # is used in tests
