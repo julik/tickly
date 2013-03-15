@@ -1,4 +1,5 @@
 require 'stringio'
+require 'bychar'
 
 module Tickly
   
@@ -10,8 +11,10 @@ module Tickly
     # in curly braces will have the symbol :c tacked onto the beginning of the array.
     # An expression in square braces will have :b at the beginning.
     def parse(io_or_str)
-      io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
-      sub_parse(io)
+      bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
+      # Wrap the IO in a Bychar buffer to read faster
+      reader = Bychar::Reader.new(bare_io)
+      sub_parse(reader)
     end
     
     # Override this to remove any unneeded subexpressions Modify the passed expr
@@ -35,7 +38,7 @@ module Tickly
       buf = ''
       last_char_was_linebreak = false
       until io.eof?
-        char = io.read(1)
+        char = io.read_one_byte
         
         if buf[LAST_CHAR] != ESC
           if char == stop_char # Bail out of a subexpr
@@ -122,7 +125,7 @@ module Tickly
     def parse_str(io, stop_char)
       buf = ''
       until io.eof?
-        c = io.read(1)
+        c = io.read_one_byte
         if c == stop_char && buf[LAST_CHAR] != ESC
           return buf
         elsif buf[LAST_CHAR] == ESC # Eat out the escape char
