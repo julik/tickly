@@ -39,5 +39,22 @@ class TestEvaluator < Test::Unit::TestCase
     ref_o = {"foo" => "bar", "baz" => "bad"}
     assert_equal ref_o, node.options
   end
+  
+  class TargetError < RuntimeError
+  end
+  
+  def test_yields_the_handler_instance
+    stack = e("SomeNode", le(e("foo", "bar"), e("baz", "bad")))
+    e = Tickly::Evaluator.new
+    e.add_node_handler_class(SomeNode)
+    ref_o = {"foo" => "bar", "baz" => "bad"}
+    
+    assert_raise(TargetError) do
+      e.evaluate(stack) do | some_node |
+        assert_kind_of SomeNode, some_node
+        raise TargetError
+      end
+    end
+  end
 
 end

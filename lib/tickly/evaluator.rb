@@ -25,7 +25,11 @@ module Tickly
         end
         
         # Instantiate the handler with the options
-        handler_class.new(hash_of_args)
+        handler_instance = handler_class.new(hash_of_args)
+        
+        # Both return and yield it
+        yield handler_instance if block_given?
+        handler_instance
       end
     end
     
