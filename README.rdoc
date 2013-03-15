@@ -1,6 +1,55 @@
 = tickly
 
-A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts)
+A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts). It structures
+the passed Nuke scripts into a TCL AST and return it. You can use some cheap tricks to discard the nodes you are not interested in.
+
+== Parsing
+
+For example:
+    
+    p = Tickly::Parser.new
+    
+    p.parse '2' #=> ["2"]
+    p.parse '{2 2}' #=> [[:c, "2", "2"]]
+    p.parse '{exec cmd [fileName]}' #=> [[:c, "exec", "cmd", [:b, "fileName"]]]
+    
+The AST is represented by simple arrays. An array is a TCL expression. An array with the :c symbol at the beginning
+element is an expression in curly braces. An array with the :b symbol at the beginning represents an expression with
+string interpolations in it. If you are curious, :c stands for "curlies" and :b for "brackets". All the other array
+elements are guaranteed to be strings.
+
+Lots and lots of TCL features are not supported - remember that most Nuke scripts are machine-generated.
+
+== Evaulating
+
+Nuke uses the following syntax for it's nodes:
+
+    SomeNode {
+      someknob 15
+      anotherknob 3
+      andanother {curve x1 12 45 67}
+    }
+
+and so on. You can use a simple Evaluator object to run through the nodes returned by the parser. To set up
+the evaulation you need to create classes matching the node classes by name. For example, a Blur class:
+
+    class Blur
+      def initialize(knobs_hash)
+      end
+    end
+    
+    e = Tickly::Evaluator.new
+    e.add_node_handler_class Blur
+    
+    some_script_expressions = Tickly::Parser.new.parse(File.open("/mnt/raid/nuke/scripts/HugeShot_123.nk"))
+    
+    some_script_expressions.each do | expression_in_ast |
+      # Everytime a Blur node is found in the script it will be instantiated,
+      # and the knobs of the node will be passed to the constructor that you define
+      e.evaluate(expression_in_ast) do | blur_node |
+        # Now a Blur node instance is all yours
+      end
+    end
 
 == Contributing to tickly
  
