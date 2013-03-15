@@ -9,10 +9,19 @@ module Tickly
       @node_handlers = []
     end
     
+    # Add a Class object that can instantiate node handlers. The last part of the class name
+    # has to match the name of the Nuke node that you want to capture.
+    # For example, to capture Tracker3 nodes a name like this will do:
+    #     Whatever::YourModule::Better::Tracker3
     def add_node_handler_class(handler_class)
       @node_handlers << handler_class
     end
     
+    # Evaluates a single Nuke TCL command, and if it is a node constructor
+    # and a class with a corresponding name has been added using add_node_handler_class
+    # the class will be instantiated and yielded to the block. The instance will also be returned
+    # at the end of the method. This method evaluates one expression at a time
+    # (it's more of a pattern matcher really)
     def evaluate(expr)
       if multiple_atoms?(expr) && has_subcommand?(expr) && has_handler?(expr) 
         handler_class = @node_handlers.find{|e| unconst_name(e) == expr[0]}
@@ -32,6 +41,8 @@ module Tickly
         handler_instance
       end
     end
+    
+    private
     
     def multiple_atoms?(expr)
       expr.length > 1

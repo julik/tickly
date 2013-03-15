@@ -2,22 +2,28 @@ require 'stringio'
 
 module Tickly
   
+  # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
     # Parses a piece of TCL and returns it converted into internal expression
-    # structures (nested StringExpr or LiteralExpr objects).
+    # structures. A basic TCL expression is just an array of Strings. An expression
+    # in curly braces will have the symbol :c tacked onto the beginning of the array.
+    # An expression in square braces will have :b at the beginning.
     def parse(io_or_str)
       io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       sub_parse(io)
     end
     
-    # Override this to remove any unneeded subexpressions
+    # Override this to remove any unneeded subexpressions Modify the passed expr
+    # array in-place.
     def expand_subexpr!(expr, at_depth)
     end
     
     private
     
     LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
+    TERMINATORS = ["\n", ";"]
+    ESC = 92.chr # Backslash (\)
     
     # Parse from a passed IO object either until an unescaped stop_char is reached
     # or until the IO is exhausted. The last argument is the class used to
@@ -42,7 +48,7 @@ module Tickly
               stack << buf
               buf = ''
             end
-            if char == "\n" # Introduce a stack separator! This is a new line
+            if TERMINATORS.include?(char) # Introduce a stack separator! This is a new line
               if stack.any? && !last_char_was_linebreak
                 last_char_was_linebreak = true
                 stack = handle_expr_terminator(stack, stack_depth)
@@ -86,8 +92,6 @@ module Tickly
       
       return stack
     end
-    
-    ESC = 92.chr # Backslash (\)
     
     def chomp!(stack)
       stack.delete_at(-1) if stack.any? && stack[-1].nil?
