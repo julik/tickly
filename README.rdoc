@@ -34,7 +34,7 @@ and so on. You can use a simple Evaluator object to run through the nodes return
 the evaulation you need to create classes matching the node classes by name. For example, a Blur class:
 
     class Blur
-      def initialize(knobs_hash)
+      def initialize(string_keyed_knobs_hash)
       end
     end
     
