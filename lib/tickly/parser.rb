@@ -4,22 +4,6 @@ require 'bychar'
 module Tickly
   
   
-  # Since you parse char by char, you will likely call
-  # eof? on each iteration. Instead. allow it to raise and do not check.
-  # This takes the profile time down from 36 seconds to 30 seconds
-  # for a large file.
-  class EOFError < RuntimeError  #:nodoc: all
-  end
-  
-  class W < Bychar::Reader  #:nodoc: all
-    def read_one_byte
-      cache if @buf.eos?
-      raise EOFError if @buf.eos?
-        
-      @buf.getch
-    end
-  end
-  
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
@@ -30,7 +14,7 @@ module Tickly
     def parse(io_or_str)
       bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       # Wrap the IO in a Bychar buffer to read faster
-      reader = W.new(bare_io)
+      reader = Bychar::Reader.new(bare_io)
       sub_parse(reader)
     end
     
@@ -71,7 +55,7 @@ module Tickly
       multiple_expressions = false
       
       no_eof do
-        char = io.read_one_byte
+        char = io.read_one_byte!
         
         if char == stop_char # Bail out of a subexpr
           # Handle any remaining subexpressions
@@ -118,14 +102,14 @@ module Tickly
     def no_eof(&blk)
       begin
         loop(&blk)
-      rescue EOFError
+      rescue Bychar::EOFError
       end
     end
     
     def parse_str(io, stop_char)
       buf = ''
       no_eof do
-        c = io.read_one_byte
+        c = io.read_one_byte!
         if c == stop_char && buf[LAST_CHAR] != ESC
           return buf
         elsif buf[LAST_CHAR] == ESC # Eat out the escape char
