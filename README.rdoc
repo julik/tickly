@@ -16,7 +16,7 @@ Create a Parser object and pass TCL expressions/scripts to it. You can pass IO o
     p.parse "tail $list" #=> ["tail", "$list"]
     
     # Multiple expressions
-    p.parse "2\n2" #=> [["2", "2"]]
+    p.parse "2\n2" #=> [["2"], ["2"]]
     
     # Expressions in curly braces   
     p.parse '{2 2}' #=> [[:c, "2", "2"]]
