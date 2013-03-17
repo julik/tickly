@@ -5,18 +5,19 @@ the passed Nuke scripts into a TCL AST and return it. You can use some cheap tri
 
 == Parsing
 
-Create a Parser object and pass TCL expressions/scripts to it. You can pass IO obejcts or strings. For example:
+Create a Parser object and pass TCL expressions/scripts to it. You can pass IO obejcts or strings. Note that parse()
+will always return an Array of expressions, even if you only fed it one expression line. For example:
     
     p = Tickly::Parser.new
     
-    # One expression
-    p.parse '2' #=> ["2"]
+    # One expression, even if it's invalid (2 is not a valid TCL bareword)- doesn't matter
+    p.parse '2' #=> [["2"]]
     
     # TCL command
-    p.parse "tail $list" #=> ["tail", "$list"]
+    p.parse "tail $list" #=> [["tail", "$list"]]
     
     # Multiple expressions
-    p.parse "2\n2" #=> [["2", "2"]]
+    p.parse "2\n2" #=> [["2"], ["2"]]
     
     # Expressions in curly braces   
     p.parse '{2 2}' #=> [[:c, "2", "2"]]
@@ -64,6 +65,10 @@ the evaulation you need to create classes matching the node classes by name. For
         # Now a Blur node instance is all yours
       end
     end
+
+== Animation curves
+
+You can parse Nuke's animation curves using Tickly::Curve. This will give you a way to iterate over every defined keyframe.
 
 == Contributing to tickly
  
