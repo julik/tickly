@@ -5,33 +5,33 @@ class TestParser < Test::Unit::TestCase
   include Tickly::Emitter
   
   should "parse a single int as a stack with a string" do
-    assert_equal e("2"), P.parse('2')
+    assert_equal e(e("2")), P.parse('2')
   end
 
   should "parse a single int and discard whitespace" do
     p = P.parse('   2 ')
-    assert_equal e("2"), p
+    assert_equal e(e("2")), p
   end
 
   should "parse multiple ints and strings as a stack of subexpressions" do
-    assert_equal e("2", "foo", "bar", "baz"), P.parse('2 foo bar baz')
+    assert_equal e(e("2", "foo", "bar", "baz")), P.parse('2 foo bar baz')
   end
   
   should "parse and expand a string in double quotes" do
     p = P.parse('"This is a string literal with spaces"')
-    assert_equal e("This is a string literal with spaces"), p
+    assert_equal e(e("This is a string literal with spaces")), p
     
     p = P.parse('"This is a string literal \"escaped\" with spaces"')
-    assert_equal e("This is a string literal \"escaped\" with spaces"), p
+    assert_equal e(e("This is a string literal \"escaped\" with spaces")), p
   end
   
   should "parse a string expression" do
-    assert_equal e(se("1", "2", "3")),  P.parse("[1 2 3]")
+    assert_equal e(e(se("1", "2", "3"))),  P.parse("[1 2 3]")
   end
   
   should "parse multiple string expressions" do
     p = P.parse("[1 2 3] [3 4 5 foo]")
-    assert_equal e(se("1", "2", "3"), se("3", "4", "5", "foo")), p
+    assert_equal e(e(se("1", "2", "3"), se("3", "4", "5", "foo"))), p
   end
   
   def test_parse_multiline_statements_as_literal_expressions
@@ -42,7 +42,7 @@ class TestParser < Test::Unit::TestCase
   def test_parse_expr
     expr = '{4 + 5}'
     p = P.parse(expr)
-    assert_equal e(le("4", "+", "5")), p
+    assert_equal e(e(le("4", "+", "5"))), p
   end
   
   def test_parsing_a_nuke_node
@@ -129,11 +129,11 @@ class TestParser < Test::Unit::TestCase
   def test_one_node_parsing
     f = File.open(File.dirname(__FILE__) + "/test-data/one_node_with_one_param.txt")
     p = P.parse(f)
-    ref = e("SomeNode",
+    ref = e(e("SomeNode",
         le(
           e("foo", "bar")
         )
-    )
+    ))
     
     assert_equal ref, p
   end

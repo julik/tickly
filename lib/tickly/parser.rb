@@ -2,20 +2,27 @@ require 'stringio'
 require 'bychar'
 
 module Tickly
-  
-  
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
     # Parses a piece of TCL and returns it converted into internal expression
     # structures. A basic TCL expression is just an array of Strings. An expression
     # in curly braces will have the symbol :c tacked onto the beginning of the array.
-    # An expression in square braces will have :b at the beginning.
+    # An expression in square braces will have the symbol :b tacked onto the beginning.
+    # This method always returns a Array of expressions. If you only fed it one expression,
+    # this expression will be the only element of the array.
+    # The correct way to use the returned results is thusly:
+    #
+    #   p = Tickly::Parser.new
+    #   expressions = p.parse("2 + 2") #=> [["2", "+", "2"]]
+    #   expression = expressions[0] #=> ["2", "2"]
     def parse(io_or_str)
       bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       # Wrap the IO in a Bychar buffer to read faster
       reader = Bychar::Reader.new(bare_io)
-      sub_parse(reader)
+      # Use multiple_expressions = true so that the top-level parsed script is always an array
+      # of expressions
+      sub_parse(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
     end
     
     # Override this to remove any unneeded subexpressions Modify the passed expr
@@ -46,13 +53,12 @@ module Tickly
     # or until the IO is exhausted. The last argument is the class used to
     # compose the subexpression being parsed. The subparser is reentrant and not
     # destructive for the object containing it.
-    def sub_parse(io, stop_char = nil, stack_depth = 0)
+    def sub_parse(io, stop_char = nil, stack_depth = 0, multiple_expressions = false)
       # A standard stack is an expression that does not evaluate to a string
       expressions = []
       stack = []
       buf = ''
       last_char_was_linebreak = false
-      multiple_expressions = false
       
       no_eof do
         char = io.read_one_byte!
