@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + "/tickly/parser"
 require File.dirname(__FILE__) + "/tickly/node_extractor"
 require File.dirname(__FILE__) + "/tickly/evaluator"
+require File.dirname(__FILE__) + "/tickly/curve"
 require 'forwardable'
 
 module Tickly
-  VERSION = '0.0.8'
+  VERSION = '1.0.0'
   
   # Provides the methods for quickly emitting the expression arrays,
   # is used in tests
