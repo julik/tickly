@@ -1,9 +1,35 @@
 module Tickly
   # Evaluates a passed TCL expression without expanding it's inner arguments.
-  # The TCL should look like Nuke's node commands (i.e. NodeClass { foo bar; baz bad; } and so on)
+  # The TCL should look like Nuke's node commands:
+  #
+  #   NodeClass { 
+  #     foo bar
+  #     baz bad
+  #   }
+  #
   # You have to add the Classes that you want to instantiate for nodes using add_node_handler_class
   # and the evaluator will instantiate the classes it finds in the passed expression and pass the
-  # node options (actually TCL commands) to the constructor, as a Ruby Hash with string keys.
+  # node options (actually TCL commands) to the constructor, as a Ruby Hash with string keys. 
+  # Every value of the knobs hash will be the AST as returned by the Parser.
+  # You have to pass every expression returned by Tickly::Parser#parse separately.
+  #
+  #    class Blur
+  #      def initialize(knobs_hash)
+  #         puts knobs_hash.inspect
+  #      end
+  #    end
+  #    
+  #    e = Tickly::Evaluator.new
+  #    e.add_node_handler_class Blur
+  #    p = Tickly::Parser.new
+  #     
+  #    expressions = p.parse(some_nuke_script)
+  #    expressions.each do | expr |
+  #      # If expr is a Nuke node constructor, a new Blur will be created and yielded
+  #      e.evaluate(expr) do | node_instance|
+  #         # do whatever you want to the node instance
+  #      end
+  #    end
   class Evaluator
     def initialize
       @node_handlers = []
