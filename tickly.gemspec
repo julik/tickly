@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "tickly"
-  s.version = "0.0.8"
+  s.version = "1.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2013-03-15"
+  s.date = "2013-03-17"
   s.description = "Parses the subset of the TCL grammar needed for Nuke scripts"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "lib/tickly.rb",
+    "lib/tickly/curve.rb",
     "lib/tickly/evaluator.rb",
     "lib/tickly/node_extractor.rb",
     "lib/tickly/parser.rb",
@@ -38,6 +39,7 @@ Gem::Specification.new do |s|
     "test/test-data/three_nodes_and_roto.txt",
     "test/test-data/tracker_with_differing_gaps.nk",
     "test/test-data/tracker_with_repeating_gaps.nk",
+    "test/test_curve.rb",
     "test/test_evaluator.rb",
     "test/test_node_extractor.rb",
     "test/test_parser.rb",
