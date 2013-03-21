@@ -15,7 +15,7 @@ class TestEvaluator < Test::Unit::TestCase
     end
   end
   
-  should "not send anything to the handler when the expr does not conform to the standard" do
+  def test_does_not_send_anything_when_the_expression_passed_does_not_match_pattern
     stack = e("ShouldNotBeInstantiated")
     e = Tickly::Evaluator.new
     e.add_node_handler_class(ShouldNotBeInstantiated)
@@ -55,6 +55,16 @@ class TestEvaluator < Test::Unit::TestCase
         raise TargetError
       end
     end
+  end
+  
+  def test_will_capture
+    e = Tickly::Evaluator.new
+    e.add_node_handler_class(SomeNode)
+    
+    valid = e("SomeNode", le(e("foo", "bar"), e("baz", "bad")))
+    assert e.will_capture?(valid)
+    assert !e.will_capture?([])
+    assert !e.will_capture?(e("SomeNode"))
   end
 
 end
