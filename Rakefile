@@ -46,3 +46,21 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+desc "Profiles the parser"
+task :profile do
+  require 'ruby-prof'
+  p = Tickly::NodeProcessor.new
+  f = File.open(File.dirname(__FILE__) + "/test/test-data/huge_nuke_tcl.tcl")
+
+  RubyProf.start
+  p.parse(f) {|_| }
+  result = RubyProf.stop
+
+  # Print a call graph
+  File.open("profiler_calls.html", "w") do | f |
+    RubyProf::GraphHtmlPrinter.new(result).print(f)
+  end
+  `open profiler_calls.html`
+end
+
