@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "tickly"
-  s.version = "1.0.0"
+  s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2013-03-17"
+  s.date = "2013-03-21"
   s.description = "Parses the subset of the TCL grammar needed for Nuke scripts"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
     "lib/tickly.rb",
     "lib/tickly/curve.rb",
     "lib/tickly/evaluator.rb",
-    "lib/tickly/node_extractor.rb",
+    "lib/tickly/node_processor.rb",
     "lib/tickly/parser.rb",
     "test/helper.rb",
     "test/test-data/huge_nuke_tcl.tcl",
@@ -41,9 +41,8 @@ Gem::Specification.new do |s|
     "test/test-data/tracker_with_repeating_gaps.nk",
     "test/test_curve.rb",
     "test/test_evaluator.rb",
-    "test/test_node_extractor.rb",
+    "test/test_node_processor.rb",
     "test/test_parser.rb",
-    "test/test_profile.rb",
     "tickly.gemspec"
   ]
   s.homepage = "http://github.com/julik/tickly"
@@ -57,24 +56,24 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<bychar>, ["~> 1.2"])
+      s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_development_dependency(%q<bundler>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.3"])
       s.add_development_dependency(%q<ruby-prof>, [">= 0"])
     else
       s.add_dependency(%q<bychar>, ["~> 1.2"])
+      s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_dependency(%q<bundler>, [">= 0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
       s.add_dependency(%q<ruby-prof>, [">= 0"])
     end
   else
     s.add_dependency(%q<bychar>, ["~> 1.2"])
+    s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
-    s.add_dependency(%q<bundler>, [">= 0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
     s.add_dependency(%q<ruby-prof>, [">= 0"])
   end
