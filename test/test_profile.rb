@@ -1,6 +1,6 @@
 require 'helper'
 
-if ENV['USER'] == 'julik'
+if ENV['USER'] == 'julik' && ENV['PROFILE_TICKLY']
 
   require 'ruby-prof'
 
