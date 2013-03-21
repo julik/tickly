@@ -91,6 +91,19 @@ class TestParser < Test::Unit::TestCase
     assert_equal blur, p[4]
   end
   
+  class Discarder < Tickly::Parser
+    def compact_subexpr(expr, depth)
+      return :discarded
+    end
+  end
+  
+  should 'discard everything passed through compact_subexpr' do
+    f = File.open(File.dirname(__FILE__) + "/test-data/three_nodes_and_roto.txt")
+    p = Discarder.new.parse(f)
+    assert_equal [:discarded, :discarded, :discarded, :discarded, :discarded], p
+  end
+  
+  
   def test_parsing_nuke_script_with_indentations
     f = File.open(File.dirname(__FILE__) + "/test-data/nuke_group.txt")
     p = P.parse(f)

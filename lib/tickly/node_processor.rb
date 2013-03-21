@@ -53,7 +53,7 @@ module Tickly
     
     class Ratchet < Parser #:nodoc: :all
       attr_accessor :expr_callback
-      def expand_subexpr!(expr, at_depth)
+      def compact_subexpr(expr, at_depth)
         expr_callback.call(expr, at_depth)
       end
     end
@@ -61,19 +61,21 @@ module Tickly
     def filter_expression(expression, at_depth)
       # Leave all expressions which are deeper than 1
       # intact
-      return if at_depth > 1
+      return expression if at_depth > 1
       
       # Skip all nodes which are not interesting for
       # the evaluator to do
       unless @evaluator.will_capture?(expression)
-        expression.replace([]) # Empty it.
-        return
+        return nil # Do not even keep it in memory
       end
       
       # And immediately evaluate
       # TODO: also yield it!
       node_instance = @evaluator.evaluate(expression)
       @node_handler.call(node_instance)
+      
+      # Still return nil
+      return nil
     end
   end
 end

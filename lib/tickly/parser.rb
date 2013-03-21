@@ -25,9 +25,11 @@ module Tickly
       sub_parse(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
     end
     
-    # Override this to remove any unneeded subexpressions Modify the passed expr
-    # array in-place.
-    def expand_subexpr!(expr, at_depth)
+    # Override this to remove any unneeded subexpressions.
+    # Return the modified expression. If you return nil, the result
+    # will not be added to the expression list
+    def compact_subexpr(expr, at_depth)
+      expr
     end
     
     private
@@ -44,7 +46,6 @@ module Tickly
       return stack unless multiple_expressions
       
       expressions << stack if stack.any?
-      expressions.each { |expr| expand_subexpr!(expr, stack_depth + 1) }
       
       return expressions
     end
@@ -73,8 +74,13 @@ module Tickly
           end
           if TERMINATORS.include?(char) && stack.any? && !last_char_was_linebreak # Introduce a stack separator! This is a new line
             stack << buf if buf.length > 0
-            expressions << stack
+            # Immediately run this expression through the filter
+            filtered_expr = compact_subexpr(stack, stack_depth + 1)
             stack = []
+            
+            # Only preserve the parsed expression if it's not nil
+            expressions << filtered_expr unless filtered_expr.nil?
+            
             last_char_was_linebreak = true
             multiple_expressions = true
             #puts "Next expression! #{expressions.inspect} #{stack.inspect} #{buf.inspect}"

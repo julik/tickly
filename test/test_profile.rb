@@ -5,14 +5,14 @@ if ENV['USER'] == 'julik'
   require 'ruby-prof'
 
   class TestProfile < Test::Unit::TestCase
-    P = Tickly::Parser.new
+    P = Tickly::NodeProcessor.new
   
   
     def test_huge_tcl
       f = File.open(File.dirname(__FILE__) + "/test-data/huge_nuke_tcl.tcl")
     
       RubyProf.start
-      P.parse(f)
+      P.parse(f) {|_| }
       result = RubyProf.stop
     
       # Print a call graph
