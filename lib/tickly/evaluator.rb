@@ -49,7 +49,7 @@ module Tickly
     # at the end of the method. This method evaluates one expression at a time
     # (it's more of a pattern matcher really)
     def evaluate(expr)
-      if multiple_atoms?(expr) && has_subcommand?(expr) && has_handler?(expr) 
+      if will_capture?(expr)
         handler_class = @node_handlers.find{|e| unconst_name(e) == expr[0]}
         handler_arguments = expr[1]
         hash_of_args = {}
@@ -66,6 +66,12 @@ module Tickly
         yield handler_instance if block_given?
         handler_instance
       end
+    end
+    
+    # Tells whether this Evaluator will actually instantiate
+    # anything from the passed expression
+    def will_capture?(expr)
+      multiple_atoms?(expr) && has_subcommand?(expr) && has_handler?(expr) 
     end
     
     private
