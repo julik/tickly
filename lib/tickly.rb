@@ -2,7 +2,6 @@ require File.dirname(__FILE__) + "/tickly/parser"
 require File.dirname(__FILE__) + "/tickly/evaluator"
 require File.dirname(__FILE__) + "/tickly/curve"
 require File.dirname(__FILE__) + "/tickly/node_processor"
-require 'forwardable'
 
 module Tickly
   VERSION = '2.0.0'
