@@ -44,7 +44,7 @@ module Tickly
     # Parses from the passed IO or string and yields every node
     # that has been instantiated
     def parse(io_or_str, &nuke_node_callback)
-      raise "You need to pass a block" unless block_given?
+      raise LocalJumpError, "NodeProcesssor#parse totally requires a block" unless block_given?
       @node_handler = nuke_node_callback
       @parser.parse(io_or_str)
     end

@@ -28,4 +28,9 @@ class TestParserEvaluator < Test::Unit::TestCase
       end
     end
   end
+  
+  def test_raises_without_a_block
+    pe = Tickly::NodeProcessor.new
+    assert_raise(LocalJumpError) { pe.parse(NUKE7_SCRIPT) }
+  end
 end
