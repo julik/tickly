@@ -97,10 +97,22 @@ class TestParser < Test::Unit::TestCase
     end
   end
   
-  should 'discard everything passed through compact_subexpr' do
+  class Eater < Tickly::Parser
+    def compact_subexpr(e, d)
+      nil
+    end
+  end
+  
+  def test_passes_expressions_via_compact_subexpr
     f = File.open(File.dirname(__FILE__) + "/test-data/three_nodes_and_roto.txt")
     p = Discarder.new.parse(f)
     assert_equal [:discarded, :discarded, :discarded, :discarded, :discarded], p
+  end
+  
+  def test_removes_all_the_expressions_compacted_into_nil
+    f = File.open(File.dirname(__FILE__) + "/test-data/three_nodes_and_roto.txt")
+    p = Eater.new.parse(f)
+    assert_equal [], p
   end
   
   
