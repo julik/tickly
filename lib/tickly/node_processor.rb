@@ -70,9 +70,7 @@ module Tickly
       end
       
       # And immediately evaluate
-      # TODO: also yield it!
-      node_instance = @evaluator.evaluate(expression)
-      @node_handler.call(node_instance)
+      @node_handler.call(@evaluator.evaluate(expression))
       
       # Still return nil
       return nil
