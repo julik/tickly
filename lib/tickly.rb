@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler.require :default
+
 require File.dirname(__FILE__) + "/tickly/parser"
 require File.dirname(__FILE__) + "/tickly/evaluator"
 require File.dirname(__FILE__) + "/tickly/curve"

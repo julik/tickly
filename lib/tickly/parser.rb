@@ -1,6 +1,3 @@
-require 'stringio'
-require 'bychar'
-
 module Tickly
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser

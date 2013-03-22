@@ -1,5 +1,6 @@
 source "http://rubygems.org"
 
+gem 'bundler'
 gem "bychar", "~> 1.2"
 
 # Add dependencies to develop your gem here.
