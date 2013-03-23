@@ -45,6 +45,12 @@ class TestParser < Test::Unit::TestCase
     assert_equal e(e(le("4", "+", "5"))), p
   end
   
+  def test_curlies_after_expr
+    expr = 'a{4 + 5}b'
+    p = P.parse(expr)
+    assert_equal [["a", [:c, "4", "+", "5"], "b"]], p
+  end
+  
   def test_parsing_a_nuke_node
     f = File.open(File.dirname(__FILE__) + "/test-data/nukenode.txt")
     p = P.parse(f)
