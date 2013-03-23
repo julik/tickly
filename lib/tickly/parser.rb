@@ -110,10 +110,6 @@ module Tickly
       return wrap_up(expressions, stack, buf, stack_depth, multiple_expressions)
     end
     
-    def chomp!(stack)
-      stack.delete_at(-1) if stack.any? && stack[-1].nil?
-    end
-    
     def no_eof(&blk)
       begin
         loop(&blk)
