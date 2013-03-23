@@ -3,14 +3,14 @@
 A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts). It structures
 the passed Nuke scripts into a TCL AST and return it. You can use some cheap tricks to discard the nodes you are not interested in.
 
-== Parsing
+== Plain parsing
 
 Create a Parser object and pass TCL expressions/scripts to it. You can pass IO obejcts or strings. Note that parse()
 will always return an Array of expressions, even if you only fed it one expression line. For example:
     
     p = Tickly::Parser.new
     
-    # One expression, even if it's invalid (2 is not a valid TCL bareword)- doesn't matter
+    # One expression, even if it's invalid (2 is not a valid TCL bareword - doesn't matter)
     p.parse '2' #=> [["2"]]
     
     # TCL command
@@ -35,40 +35,61 @@ Multiple expressions separated by ; or a newline will be accumulated as multiple
 Lots and lots of TCL features are not supported - remember that most Nuke scripts are machine-generated and they do not
 use most of the esoteric language features.
 
-== Evaulating
+== Evaulating nodes in Nuke scripts
 
-Nuke uses the following syntax for it's nodes:
+What you are likely to use Tickly for is parsing Nuke scripts. They got multiple node definitions, which
+are actially arguments for a node constructor written out in TCL. Consider this ubiquitous fragment for a
+hypothetic SomeNode in your script:
 
     SomeNode {
       someknob 15
       anotherknob 3
-      andanother {curve x1 12 45 67}
+      animation {curve x1 12 45 67}
+      x_pos 123
+      y_pos -10
     }
 
-and so on. You can use a simple Evaluator object to run through the nodes returned by the parser. To set up
-the evaulation you need to create classes matching the node classes by name. For example, a Blur class:
+and so on. You can use a NodeProcessor to capture these node constructors right as they are being parsed.
 
-    class Blur
+All the nodes you are not interested in will be discarded, which matters in terms of memory use.
+
+To do it you need to create Ruby classes matching the node classes by name. For example, for that SomeNode
+of ours:
+
+    class SomeNode
+      attr_reader :knobs
       def initialize(string_keyed_knobs_hash)
+        @knobs = string_keyed_knobs_hash
       end
     end
     
-    e = Tickly::Evaluator.new
+    # Instantiate a new processor
+    e = Tickly::NodeProcessor.new
+    
+    # Add the class
     e.add_node_handler_class Blur
     
-    some_script_expressions = Tickly::Parser.new.parse(File.open("/mnt/raid/nuke/scripts/HugeShot_123.nk"))
+    file = File.open("/mnt/raid/nuke/scripts/HugeShot_123.nk")
     
-    some_script_expressions.each do | expression_in_ast |
-      # Everytime a Blur node is found in the script it will be instantiated,
+    e.parse(file) do | every_some_node |
+      # Everytime a SomeNode is found in the script it will be instantiated,
       # and the knobs of the node will be passed to the constructor that you define
-      e.evaluate(expression_in_ast) do | blur_node |
-        # Now a Blur node instance is all yours
-      end
+      x_position = every_some_node.knobs["x_pos"]
+      ...
     end
+
+If you are curious, this is how Tracksperanto parses various nodes containing tracking data:
+    
+    parser = Tickly::NodeProcessor.new
+    parser.add_node_handler_class(Tracker3)
+    parser.add_node_handler_class(Reconcile3D)
+    parser.add_node_handler_class(PlanarTracker1_0)
+    parser.add_node_handler_class(Tracker4)
 
 == Animation curves
 
 You can parse Nuke's animation curves using Tickly::Curve. This will give you a way to iterate over every defined keyframe.
+This currently does not happen automatically for things passing through the parser.
 
 == Contributing to tickly
  
