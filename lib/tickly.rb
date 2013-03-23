@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/tickly/curve"
 require File.dirname(__FILE__) + "/tickly/node_processor"
 
 module Tickly
-  VERSION = '2.0.0'
+  VERSION = '2.1.0'
   
   # Provides the methods for quickly emitting the expression arrays,
   # is used in tests
