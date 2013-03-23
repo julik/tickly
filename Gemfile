@@ -1,6 +1,6 @@
 source "http://rubygems.org"
 
-gem "bychar", "~> 1.2"
+gem 'bychar', '~> 2'
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
