@@ -53,6 +53,14 @@ module Tickly
       return expressions
     end
     
+    # If the passed buf contains any bytes, put them on the stack and
+    # empty the buffer
+    def ramass_buf(stack, buf)
+      return if buf.length == 0
+      stack << buf.dup
+      buf.replace('')
+    end
+    
     # Parse from a passed IO object either until an unescaped stop_char is reached
     # or until the IO is exhausted. The last argument is the class used to
     # compose the subexpression being parsed. The subparser is reentrant and not
@@ -68,6 +76,8 @@ module Tickly
         char = io.read_one_char!
         
         if char == stop_char # Bail out of a subexpr
+          # TODO: default stop_char is nil, and this is also what gets returned from a depleted
+          # IO on IO#read(). We should do that in Bychar.
           # Handle any remaining subexpressions
           return wrap_up(expressions, stack, buf, stack_depth, multiple_expressions)
         elsif char == " " || char == "\n" # Space
@@ -76,7 +86,9 @@ module Tickly
             buf = ''
           end
           if TERMINATORS.include?(char) && stack.any? && !last_char_was_linebreak # Introduce a stack separator! This is a new line
-            stack << buf if buf.length > 0
+            
+            ramass_buf(stack, buf)
+            
             # Immediately run this expression through the filter
             filtered_expr = compact_subexpr(stack, stack_depth + 1)
             stack = []
@@ -91,16 +103,16 @@ module Tickly
             last_char_was_linebreak = false
           end
         elsif char == '[' # Opens a new string expression
-          stack << buf if (buf.length > 0)
+          ramass_buf(stack, buf)
           stack << [:b] + sub_parse(io, ']', stack_depth + 1)
         elsif char == '{' # Opens a new literal expression  
-          stack << buf if (buf.length > 0)
+          ramass_buf(stack, buf)
           stack << [:c] + sub_parse(io, '}', stack_depth + 1)
         elsif char == '"'
-          stack << buf if (buf.length > 0)
+          ramass_buf(stack, buf)
           stack << parse_str(io, '"')
         elsif char == "'"
-          stack << buf if (buf.length > 0)
+          ramass_buf(stack, buf)
           stack << parse_str(io, "'")
         else
           buf << char
