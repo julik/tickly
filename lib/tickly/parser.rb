@@ -1,7 +1,39 @@
 require 'stringio'
-require 'bychar'
 
 module Tickly
+  
+  # This object helps you build parsers that parse an IO byte by byte without having to
+  # read byte by byte.
+  # Reading byte by byte is very inefficient, but we want to parse byte by byte since
+  # this makes parser construction much easier. So what we do is cache some chunk of the
+  # passed buffer and read from that. Once exhausted there will be some caching again,
+  # and ad infinitum until the passed buffer is exhausted
+  class GetChar #:nodoc: :all
+    # Gets raised when you have exhausted the underlying IO
+    class EOFError < RuntimeError  #:nodoc: all
+    end
+  
+    def initialize(with_io)
+      @io = with_io
+      @i = 0
+      @s = ''
+    end
+
+    # Will transparently read one byte off the contained IO, maintaining the internal cache.
+    # If the cache has been depleted it will read a big chunk from the IO and cache it and then
+    # return the byte
+    def read_one_byte!
+      if @i > (@s.length - 1)
+        @s = @io.gets
+        raise EOFError if @s.nil?
+        @i = 0
+      end
+      @i += 1
+      @s[@i - 1]
+    end
+  end
+  
+  
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
@@ -19,7 +51,7 @@ module Tickly
     def parse(io_or_str)
       bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       # Wrap the IO in a Bychar buffer to read faster
-      reader = Bychar::Reader.new(bare_io)
+      reader = GetChar.new(bare_io)
       # Use multiple_expressions = true so that the top-level parsed script is always an array
       # of expressions
       sub_parse(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
@@ -114,7 +146,7 @@ module Tickly
     def no_eof(&blk)
       begin
         loop(&blk)
-      rescue Bychar::EOFError
+      rescue GetChar::EOFError
       end
     end
     
