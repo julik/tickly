@@ -40,6 +40,7 @@ module Tickly
     LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
     TERMINATORS = ["\n", ";"]
     ESC = 92.chr # Backslash (\)
+    QUOTES = %w( " ' )
     
     # Package the expressions, stack and buffer.
     # We use a special flag to tell us whether we need multuple expressions.
@@ -110,12 +111,9 @@ module Tickly
         elsif char == '{' # Opens a new literal expression  
           consume_remaining_buffer(stack, buf)
           stack << [:c] + parse_expr(io, '}', stack_depth + 1)
-        elsif char == '"'
+        elsif QUOTES.include?(char) # String
           consume_remaining_buffer(stack, buf)
-          stack << parse_str(io, '"')
-        elsif char == "'"
-          consume_remaining_buffer(stack, buf)
-          stack << parse_str(io, "'")
+          stack << parse_str(io, char)
         else
           buf << char
         end
