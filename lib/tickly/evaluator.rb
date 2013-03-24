@@ -32,7 +32,7 @@ module Tickly
   #    end
   class Evaluator
     def initialize
-      @node_handlers = []
+      @node_handlers = {}
     end
     
     # Add a Class object that can instantiate node handlers. The last part of the class name
@@ -40,7 +40,7 @@ module Tickly
     # For example, to capture Tracker3 nodes a name like this will do:
     #     Whatever::YourModule::Better::Tracker3
     def add_node_handler_class(handler_class)
-      @node_handlers << handler_class
+      @node_handlers[class_name_without_modules(handler_class)] = handler_class
     end
     
     # Evaluates a single Nuke TCL command, and if it is a node constructor
@@ -50,7 +50,7 @@ module Tickly
     # (it's more of a pattern matcher really)
     def evaluate(expr)
       if will_capture?(expr)
-        handler_class = @node_handlers.find{|e| unconst_name(e) == expr[0]}
+        handler_class = @node_handlers[expr[0]]
         handler_arguments = expr[1]
         hash_of_args = {}
         # Use 1..-1 to skip the curly brace symbol
@@ -81,10 +81,10 @@ module Tickly
     end
     
     def has_handler?(expr)
-      @node_handlers.map{|handler_class| unconst_name(handler_class) }.include?(expr[0])
+      @node_handlers.has_key? expr[0]
     end
     
-    def unconst_name(some_module)
+    def class_name_without_modules(some_module)
       some_module.to_s.split('::').pop
     end
     
