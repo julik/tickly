@@ -129,11 +129,12 @@ module Tickly
       end
     end
     
-    def parse_str(io, stop_char)
+    # Parse a string literal, in single or double quotes.
+    def parse_str(io, stop_quote)
       buf = ''
       no_eof do
         c = io.read_one_char!
-        if c == stop_char && buf[LAST_CHAR] != ESC
+        if c == stop_quote && buf[LAST_CHAR] != ESC
           return buf
         elsif buf[LAST_CHAR] == ESC # Eat out the escape char
           buf = buf[0..-2] # Trim the escape character at the end of the buffer
