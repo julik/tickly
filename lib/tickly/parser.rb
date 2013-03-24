@@ -5,6 +5,10 @@ module Tickly
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
+    # Gets raised on invalid input
+    class Error < RuntimeError
+    end
+    
     # Parses a piece of TCL and returns it converted into internal expression
     # structures. A basic TCL expression is just an array of Strings. An expression
     # in curly braces will have the symbol :c tacked onto the beginning of the array.
@@ -19,7 +23,7 @@ module Tickly
     def parse(io_or_str)
       bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
       # Wrap the IO in a Bychar buffer to read faster
-      reader = Bychar.wrap(bare_io)
+      reader = R.new(Bychar.wrap(bare_io))
       # Use multiple_expressions = true so that the top-level parsed script is always an array
       # of expressions
       parse_expr(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
@@ -41,6 +45,21 @@ module Tickly
     TERMINATORS = ["\n", ";"]
     ESC = 92.chr # Backslash (\)
     QUOTES = %w( " ' )
+    
+    # TODO: this has to go into Bychar. We should not use exprs for flow control.
+    class R #:nodoc: :all
+      def initialize(bychar)
+        @bychar = bychar
+      end
+      
+      def read_one_char
+        begin
+          c = @bychar.read_one_char!
+        rescue Bychar::EOF
+          nil
+        end
+      end
+    end
     
     # Package the expressions, stack and buffer.
     # We use a special flag to tell us whether we need multuple expressions.
@@ -74,10 +93,12 @@ module Tickly
       stack = []
       buf = ''
       
-      no_eof do
-        char = io.read_one_char!
+      loop do
+        char = io.read_one_char
         
-        if char == stop_char # Bail out of a subexpr
+        if stop_char && char.nil?
+          raise Error, "IO ran out when parsing a subexpression (expected to end on #{stop_char.inspect})"
+        elsif char == stop_char # Bail out of a subexpr or bail out on nil
           # TODO: default stop_char is nil, and this is also what gets returned from a depleted
           # IO on IO#read(). We should do that in Bychar.
           # Handle any remaining subexpressions
@@ -119,22 +140,17 @@ module Tickly
         end
       end
       
-      return wrap_up(expressions, stack, buf, stack_depth, multiple_expressions)
-    end
-    
-    def no_eof(&blk)
-      begin
-        loop(&blk)
-      rescue Bychar::EOF
-      end
+      raise Error, "Should never happen"
     end
     
     # Parse a string literal, in single or double quotes.
     def parse_str(io, stop_quote)
       buf = ''
-      no_eof do
-        c = io.read_one_char!
-        if c == stop_quote && buf[LAST_CHAR] != ESC
+      loop do
+        c = io.read_one_char
+        if c.nil?
+          raise Error, "The IO ran out before the end of a literal string"
+        elsif c == stop_quote && buf[LAST_CHAR] != ESC
           return buf
         elsif buf[LAST_CHAR] == ESC # Eat out the escape char
           buf = buf[0..-2] # Trim the escape character at the end of the buffer

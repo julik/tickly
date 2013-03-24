@@ -45,6 +45,19 @@ class TestParser < Test::Unit::TestCase
     assert_equal e(e(le("4", "+", "5"))), p
   end
   
+  def test_raises_on_unterminated_string
+    expr = '"Literal with no closing quote'
+    assert_raise(Tickly::Parser::Error) { P.parse(expr) }
+  end
+
+  def test_raises_on_unterminated_subexpressions
+    expr = 'a {b'
+    assert_raise(Tickly::Parser::Error) { P.parse(expr) }
+    
+    expr = 'a [b'
+    assert_raise(Tickly::Parser::Error) { P.parse(expr) }
+  end
+   
   def test_curlies_after_expr
     expr = 'a{4 + 5}b'
     p = P.parse(expr)
