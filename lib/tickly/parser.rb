@@ -42,8 +42,10 @@ module Tickly
     ESC = 92.chr # Backslash (\)
     
     # Package the expressions, stack and buffer.
-    # We use a special flag to tell us whether we need multuple expressions
-    # or not, if not we just discard them
+    # We use a special flag to tell us whether we need multuple expressions.
+    # If we do, the expressions will be returned. If not, just the stack.
+    # Also, anything that remains on the stack will be put on the expressions
+    # list if multiple_expressions is true.
     def wrap_up(expressions, stack, buf, stack_depth, multiple_expressions)
       stack << buf if (buf.length > 0)
       return stack unless multiple_expressions
@@ -70,7 +72,6 @@ module Tickly
       expressions = []
       stack = []
       buf = ''
-      last_char_was_linebreak = false
       
       no_eof do
         char = io.read_one_char!
@@ -85,22 +86,23 @@ module Tickly
             stack << buf
             buf = ''
           end
-          if TERMINATORS.include?(char) && stack.any? && !last_char_was_linebreak # Introduce a stack separator! This is a new line
+          if TERMINATORS.include?(char) && stack.any? # Introduce a stack separator! This is a new line
             
+            # First get rid of the remaining buffer data
             consume_remaining_buffer(stack, buf)
             
-            # Immediately run this expression through the filter
+            # Since we now finished an expression and it is on the stack,
+            # we can run this expression through the filter
             filtered_expr = compact_subexpr(stack, stack_depth + 1)
-            stack = []
             
             # Only preserve the parsed expression if it's not nil
             expressions << filtered_expr unless filtered_expr.nil?
             
-            last_char_was_linebreak = true
+            # Reset the stack for the next expression
+            stack = []
+            
+            # Note that we will return multiple expressions instead of one
             multiple_expressions = true
-            #puts "Next expression! #{expressions.inspect} #{stack.inspect} #{buf.inspect}"
-          else
-            last_char_was_linebreak = false
           end
         elsif char == '[' # Opens a new string expression
           consume_remaining_buffer(stack, buf)
