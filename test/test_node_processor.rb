@@ -34,19 +34,5 @@ class TestParserEvaluator < Test::Unit::TestCase
     pe = Tickly::NodeProcessor.new
     assert_raise(LocalJumpError) { pe.parse(NUKE7_SCRIPT) }
   end
-  
-  class Tracker3
-    def initialize(n); end
-  end
-  
-  def test_parses_huge
-    pe = Tickly::NodeProcessor.new
-    pe.add_node_handler_class(Tracker3)
-    
-    counter = 0
-    pe.parse(HUGE_SCRIPT) do | t |
-      counter += 1
-    end
-    assert_equal 45, counter
-  end
+
 end
