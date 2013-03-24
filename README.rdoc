@@ -30,8 +30,8 @@ will always return an Array of expressions, even if you only fed it one expressi
     p.parse '{exec cmd [fileName]}' #=> [[:c, "exec", "cmd", [:b, "fileName"]]]
 
 The AST is represented by simple arrays. An array is a TCL expression. An array with the +:c+ symbol at the beginning
-element is an expression in curly braces. An array with the +:b+ symbol at the beginning represents an expression with
-string interpolations in it. If you are curious, +:c+ stands for "curlies" and +:b+ for "brackets". All the other array
+is a literal expression in curly braces. An array with the +:b+ symbol at the beginning is an expression with
+string interpolations (square brackets). If you are curious, +:c+ stands for "curlies" and +:b+ for "brackets". All the other array
 elements are guaranteed to be strings.
 
 Multiple expressions separated by +;+ or a newline will be accumulated as multiple arrays.
