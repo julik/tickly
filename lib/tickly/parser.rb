@@ -55,7 +55,7 @@ module Tickly
     
     # If the passed buf contains any bytes, put them on the stack and
     # empty the buffer
-    def ramass_buf(stack, buf)
+    def consume_remaining_buffer(stack, buf)
       return if buf.length == 0
       stack << buf.dup
       buf.replace('')
@@ -87,7 +87,7 @@ module Tickly
           end
           if TERMINATORS.include?(char) && stack.any? && !last_char_was_linebreak # Introduce a stack separator! This is a new line
             
-            ramass_buf(stack, buf)
+            consume_remaining_buffer(stack, buf)
             
             # Immediately run this expression through the filter
             filtered_expr = compact_subexpr(stack, stack_depth + 1)
@@ -103,16 +103,16 @@ module Tickly
             last_char_was_linebreak = false
           end
         elsif char == '[' # Opens a new string expression
-          ramass_buf(stack, buf)
+          consume_remaining_buffer(stack, buf)
           stack << [:b] + sub_parse(io, ']', stack_depth + 1)
         elsif char == '{' # Opens a new literal expression  
-          ramass_buf(stack, buf)
+          consume_remaining_buffer(stack, buf)
           stack << [:c] + sub_parse(io, '}', stack_depth + 1)
         elsif char == '"'
-          ramass_buf(stack, buf)
+          consume_remaining_buffer(stack, buf)
           stack << parse_str(io, '"')
         elsif char == "'"
-          ramass_buf(stack, buf)
+          consume_remaining_buffer(stack, buf)
           stack << parse_str(io, "'")
         else
           buf << char
