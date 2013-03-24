@@ -46,6 +46,7 @@ are actially arguments for a node constructor written out in TCL. Consider this 
 hypothetic SomeNode in your script:
 
     SomeNode {
+      name SomeNode4
       someknob 15
       anotherknob 3
       animation {curve x1 12 45 67}
@@ -53,14 +54,14 @@ hypothetic SomeNode in your script:
       y_pos -10
     }
 
-and so on. You can use a NodeProcessor to capture these node constructors right as they are being parsed.
+and so on. You can use a +NodeProcessor+ to capture these node constructors right as they are being parsed.
+The advantage of this workflow is that the processor will discard all the nodes you don't need, saving time
+and memory.
 
-All the nodes you are not interested in will be discarded, which matters in terms of memory use.
-
-To do it you need to create Ruby classes matching the node classes by name. It doesn't matter if your
+To match nodes you create Ruby classes matching the node classes by name. It doesn't matter if your
 custom node handler is inside a module since the processor will only use the last part of the name.
 
-For example, to capture every SomeNode in your script:
+For example, to capture every +SomeNode+ in your script:
     
     # Remember, only the last part of the class name matters
     class MyAwesomeDirtyScript::SomeNode
