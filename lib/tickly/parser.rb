@@ -22,7 +22,7 @@ module Tickly
       reader = Bychar.wrap(bare_io)
       # Use multiple_expressions = true so that the top-level parsed script is always an array
       # of expressions
-      sub_parse(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
+      parse_expr(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
     end
     
     # Override this to remove any unneeded subexpressions.
@@ -65,7 +65,7 @@ module Tickly
     # or until the IO is exhausted. The last argument is the class used to
     # compose the subexpression being parsed. The subparser is reentrant and not
     # destructive for the object containing it.
-    def sub_parse(io, stop_char = nil, stack_depth = 0, multiple_expressions = false)
+    def parse_expr(io, stop_char = nil, stack_depth = 0, multiple_expressions = false)
       # A standard stack is an expression that does not evaluate to a string
       expressions = []
       stack = []
@@ -104,10 +104,10 @@ module Tickly
           end
         elsif char == '[' # Opens a new string expression
           consume_remaining_buffer(stack, buf)
-          stack << [:b] + sub_parse(io, ']', stack_depth + 1)
+          stack << [:b] + parse_expr(io, ']', stack_depth + 1)
         elsif char == '{' # Opens a new literal expression  
           consume_remaining_buffer(stack, buf)
-          stack << [:c] + sub_parse(io, '}', stack_depth + 1)
+          stack << [:c] + parse_expr(io, '}', stack_depth + 1)
         elsif char == '"'
           consume_remaining_buffer(stack, buf)
           stack << parse_str(io, '"')
