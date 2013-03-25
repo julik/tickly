@@ -4,20 +4,20 @@ class TestParser < Test::Unit::TestCase
   P = Tickly::Parser.new
   include Tickly::Emitter
   
-  should "parse a single int as a stack with a string" do
+  def test_parse_single_int_as_a_stack_with_string_token
     assert_equal e(e("2")), P.parse('2')
   end
 
-  should "parse a single int and discard whitespace" do
+  def test_parse_single_int_and_discard_whitespace
     p = P.parse('   2 ')
     assert_equal e(e("2")), p
   end
 
-  should "parse multiple ints and strings as a stack of subexpressions" do
+  def test_parse_multiple_ints_and_strings_as_stack_of_expressions
     assert_equal e(e("2", "foo", "bar", "baz")), P.parse('2 foo bar baz')
   end
   
-  should "parse and expand a string in double quotes" do
+  def test_parse_and_expand_a_string_in_double_quotes
     p = P.parse('"This is a string literal with spaces"')
     assert_equal e(e("This is a string literal with spaces")), p
     
@@ -25,11 +25,11 @@ class TestParser < Test::Unit::TestCase
     assert_equal e(e("This is a string literal \"escaped\" with spaces")), p
   end
   
-  should "parse a string expression" do
+  def test_parse_string_expression
     assert_equal e(e(se("1", "2", "3"))),  P.parse("[1 2 3]")
   end
   
-  should "parse multiple string expressions" do
+  def test_parse_multiple_string_expressions_in_one_expression
     p = P.parse("[1 2 3] [3 4 5 foo]")
     assert_equal e(e(se("1", "2", "3"), se("3", "4", "5", "foo"))), p
   end
@@ -89,7 +89,7 @@ class TestParser < Test::Unit::TestCase
     assert_equal script, p
   end
   
-  should 'parse a simple Nuke script and internalize the RotoPaint in it' do
+  def test_parse_a_simple_Nuke_script_and_internalize_the_RotoPaint
     f = File.open(File.dirname(__FILE__) + "/test-data/three_nodes_and_roto.txt")
     p = P.parse(f)
     # Should pass through the rotopaint node and get to the blur properly

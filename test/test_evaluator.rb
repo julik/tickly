@@ -3,7 +3,7 @@ require 'helper'
 class TestEvaluator < Test::Unit::TestCase
   include Tickly::Emitter
   
-  should "not do anything without handlers" do
+  def test_does_nothing_without_handlers
     stack = le("Tracker4", le(le("enabled", "true")))
     e = Tickly::Evaluator.new
     e.evaluate(stack)
