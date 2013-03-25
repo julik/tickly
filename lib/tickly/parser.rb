@@ -149,7 +149,7 @@ module Tickly
         c = io.read_one_char
         if c.nil?
           raise Error, "The IO ran out before the end of a literal string"
-        elsif last_char(buf) == ESC # If this char was escaped
+        elsif buf.length > 0 && last_char(buf) == ESC # If this char was escaped
           # Trim the escape character at the end of the buffer
           buf = buf[0..-2] 
           buf << c
