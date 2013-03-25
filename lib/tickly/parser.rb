@@ -41,7 +41,6 @@ module Tickly
     
     private
     
-    LAST_CHAR = -1..-1 # If we were 1.9 only we could use -1
     TERMINATORS = ["\n", ";"]
     ESC = 92.chr # Backslash (\)
     QUOTES = %w( " ' )
@@ -150,9 +149,9 @@ module Tickly
         c = io.read_one_char
         if c.nil?
           raise Error, "The IO ran out before the end of a literal string"
-        elsif c == stop_quote && buf[LAST_CHAR] != ESC
+        elsif c == stop_quote && last_char(buf) != ESC
           return buf
-        elsif buf[LAST_CHAR] == ESC # Eat out the escape char
+        elsif last_char(buf) == ESC # Eat out the escape char
           buf = buf[0..-2] # Trim the escape character at the end of the buffer
           buf << c
         else
@@ -163,5 +162,8 @@ module Tickly
       return buf
     end
     
+    def last_char(str)
+      RUBY_VERSION < '1.9' ? str[-1].chr : str[-1]
+    end
   end
 end
