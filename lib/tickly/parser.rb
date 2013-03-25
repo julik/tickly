@@ -159,8 +159,6 @@ module Tickly
           buf << c
         end
       end
-      
-      return buf
     end
     
     def last_char(str)
