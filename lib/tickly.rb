@@ -5,21 +5,4 @@ require File.dirname(__FILE__) + "/tickly/node_processor"
 
 module Tickly
   VERSION = '2.1.1'
-  
-  # Provides the methods for quickly emitting the expression arrays,
-  # is used in tests
-  module Emitter #:nodoc :all
-    def le(*elems)
-      [:c] + elems
-    end
-    
-    def e(*elems)
-      elems
-    end
-    
-    def se(*elems)
-      [:b] + elems
-    end
-  end
-  
 end

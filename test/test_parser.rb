@@ -2,7 +2,6 @@ require 'helper'
 
 class TestParser < Test::Unit::TestCase
   P = Tickly::Parser.new
-  include Tickly::Emitter
   
   def test_parse_single_int_as_a_stack_with_string_token
     assert_equal e(e("2")), P.parse('2')

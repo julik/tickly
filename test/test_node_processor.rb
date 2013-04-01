@@ -1,7 +1,6 @@
 require 'helper'
 
 class TestParserEvaluator < Test::Unit::TestCase
-  include Tickly::Emitter
   
   HUGE_SCRIPT = File.open(File.dirname(__FILE__) + "/test-data/huge_nuke_tcl.tcl")
   NUKE7_SCRIPT = File.open(File.dirname(__FILE__) + "/test-data/nuke7_tracker_2tracks.nk")
