@@ -29,14 +29,18 @@ will always return an Array of expressions, even if you only fed it one expressi
     # Expressions in square brackets
     p.parse '{exec cmd [fileName]}' #=> [[:c, "exec", "cmd", [:b, "fileName"]]]
 
-The AST is represented by simple arrays. An array is a TCL expression. An array with the +:c+ symbol at the beginning
-is a literal expression in curly braces. An array with the +:b+ symbol at the beginning is an expression with
-string interpolations (square brackets). If you are curious, +:c+ stands for "curlies" and +:b+ for "brackets". All the other array
-elements are guaranteed to be strings.
+The AST is represented by simple arrays. Each TCL expression becomes an array. An array starting 
+with the :c symbol ("c" for "curlies") is a literal expression in curly braces ({}). An array with the
+:b symbol at the beginning is an expression with string interpolations (square brackets).
+All the other array elements are guaranteed to be strings.
 
-Multiple expressions separated by +;+ or a newline will be accumulated as multiple arrays.
+String literals are expanded to string array elements.
 
-Lots and lots of TCL features are not supported - remember that most Nuke scripts are machine-generated and they do not
+    p.parse( '"a string with \"quote"') #=> [['a string with "quote']]
+
+Multiple expressions separated by semicolons or newlines will be accumulated as multiple arrays.
+
+Lots and lots of TCL features are probably not supported - remember that most Nuke scripts are machine-generated and they do not
 use most of the esoteric language features.
 
 == Evaulating nodes in Nuke scripts
