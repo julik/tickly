@@ -24,7 +24,6 @@ module Tickly
   #    e.add_node_handler_class Blur
   #    e.parse(File.open("/path/to/script.nk")) do | blur_node |
   #      # do whatever you want to the node instance
-  #      end
   #    end
   class NodeProcessor
     def initialize
