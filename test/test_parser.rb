@@ -1,4 +1,4 @@
-require 'helper'
+require File.dirname(__FILE__) + '/helper'
 
 class TestParser < Test::Unit::TestCase
   P = Tickly::Parser.new
@@ -133,6 +133,13 @@ class TestParser < Test::Unit::TestCase
     assert_equal [], p
   end
   
+  def test_parsing_nuke_script_with_shitdows_line_breaks
+    f = File.open(File.dirname(__FILE__) + "/test-data/windows_linebreaks.nk")
+    p = P.parse(f)
+    
+    first_expr = p[0]
+    assert_equal ["set", "cut_paste_input", [:b, "stack", "0"]], first_expr, "Should have chopped off the <CR>"
+  end
   
   def test_parsing_nuke_script_with_indentations
     f = File.open(File.dirname(__FILE__) + "/test-data/nuke_group.txt")

@@ -95,6 +95,9 @@ module Tickly
       loop do
         char = io.read_one_char
         
+        # Ignore carriage returns
+        next if char == "\r"
+        
         if stop_char && char.nil?
           raise Error, "IO ran out when parsing a subexpression (expected to end on #{stop_char.inspect})"
         elsif char == stop_char # Bail out of a subexpr or bail out on nil
