@@ -4,5 +4,5 @@ require File.dirname(__FILE__) + "/tickly/curve"
 require File.dirname(__FILE__) + "/tickly/node_processor"
 
 module Tickly
-  VERSION = '2.1.1'
+  VERSION = '2.1.2'
 end
