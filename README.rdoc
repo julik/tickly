@@ -32,7 +32,7 @@ will always return an Array of expressions, even if you only fed it one expressi
 The AST is represented by simple arrays. Each TCL expression becomes an array. An array starting 
 with the :c symbol ("c" for "curlies") is a literal expression in curly braces ({}). An array with the
 :b symbol at the beginning is an expression with string interpolations (square brackets).
-All the other array elements are guaranteed to be strings.
+All the other array elements are guaranteed to be strings or innner expressions (arrays).
 
 String literals are expanded to string array elements.
 
