@@ -17,8 +17,13 @@ module Tickly
     #     [:c, "curve", "x1", "123", "456", ...]
     def initialize(curve_expression)
       raise InvalidCurveError, "A curve expression should have :c as it's first symbol" unless curve_expression[0] == :c
-      raise InvalidCurveError, "A curve expression should start with a `curve' command" unless curve_expression[1] == "curve"
       raise InvalidCurveError, "Curve expression contained no values" unless curve_expression[2]
+      
+      # Nuke7 sometimes produces curves where the command is a string literal 
+      # within quotes, and it contains a trailing space
+      cmd = curve_expression[1].to_s.strip
+      raise InvalidCurveError, "Curve expression should start with a 'curve' command" unless cmd == 'curve'
+      
       
       expand_curve(curve_expression)
     end
