@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "tickly"
-  s.version = "2.1.2"
+  s.version = "2.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2013-08-15"
+  s.date = "2013-09-01"
   s.description = "Parses the subset of the TCL grammar needed for Nuke scripts"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
