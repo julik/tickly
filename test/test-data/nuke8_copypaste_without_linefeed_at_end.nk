@@ -1,0 +1,6 @@
+set cut_paste_input [stack 0]
+version 8.0 v1
+push $cut_paste_input
+Tracker4 {
+ypos -177
+}

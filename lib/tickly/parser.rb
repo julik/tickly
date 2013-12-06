@@ -71,6 +71,11 @@ module Tickly
       
       expressions << stack if stack.any?
       
+      # Make sure that all of the expresisons get collapsed
+      expressions = expressions.map do | e |
+        compact_subexpr(e, stack_depth + 1)
+      end
+      
       return expressions
     end
     
