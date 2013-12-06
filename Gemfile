@@ -7,6 +7,6 @@ gem 'bychar', '~> 2'
 group :development do
   gem "rake"
   gem "rdoc", "~> 3.12"
-  gem "jeweler", "~> 1.8.3"
+  gem "jeweler", "~> 1.8.7"
   gem "ruby-prof"
 end
