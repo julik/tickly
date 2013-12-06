@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "tickly"
-  s.version = "2.1.3"
+  s.version = "2.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2013-09-01"
+  s.date = "2013-12-06"
   s.description = "Parses the subset of the TCL grammar needed for Nuke scripts"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
     "test/helper.rb",
     "test/test-data/huge_nuke_tcl.tcl",
     "test/test-data/nuke7_tracker_2tracks.nk",
+    "test/test-data/nuke8_copypaste_without_linefeed_at_end.nk",
     "test/test-data/nuke_group.txt",
     "test/test-data/nukenode.txt",
     "test/test-data/one_node_with_one_param.txt",
@@ -51,11 +52,11 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/julik/tickly"
   s.licenses = ["MIT"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.25"
+  s.rubygems_version = "2.0.3"
   s.summary = "Assists in parsing Nuke scripts in TCL"
 
   if s.respond_to? :specification_version then
-    s.specification_version = 3
+    s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<bychar>, ["~> 2"])
