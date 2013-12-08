@@ -1,5 +1,3 @@
-= tickly
-
 A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts).
 It transforms the passed Nuke scripts into a TCL AST. 
 It also supports some cheap tricks to discard the nodes you are not interested in, since Nuke
@@ -7,7 +5,7 @@ scripts easily grow into tens of megabytes.
 
 The AST format is extremely simple (nested arrays).
 
-== Plain parsing
+## Plain parsing
 
 Create a Parser object and pass TCL expressions/scripts to it. You can pass IO obejcts or strings. Note that parse()
 will always return an Array of expressions, even if you only fed it one expression line. For example:
@@ -30,8 +28,9 @@ will always return an Array of expressions, even if you only fed it one expressi
     p.parse '{exec cmd [fileName]}' #=> [[:c, "exec", "cmd", [:b, "fileName"]]]
 
 The AST is represented by simple arrays. Each TCL expression becomes an array. An array starting 
-with the :c symbol ("c" for "curlies") is a literal expression in curly braces ({}). An array with the
-:b symbol at the beginning is an expression with string interpolations (square brackets).
+with the `:c` symbol ("c" for "curlies") is a literal expression in curly braces (`{}`). 
+An array with the `:b` symbol at the beginning is an expression with string interpolations 
+(square brackets).
 All the other array elements are guaranteed to be strings or innner expressions (arrays).
 
 String literals are expanded to string array elements.
@@ -40,10 +39,10 @@ String literals are expanded to string array elements.
 
 Multiple expressions separated by semicolons or newlines will be accumulated as multiple arrays.
 
-Lots and lots of TCL features are probably not supported - remember that most Nuke scripts are machine-generated and they do not
-use most of the esoteric language features.
+Lots and lots of TCL features are probably not supported - remember that most Nuke scripts are 
+machine-generated and they do not use most of the esoteric language features.
 
-== Evaulating nodes in Nuke scripts
+## Evaulating nodes in Nuke scripts
 
 What you are likely to use Tickly for is parsing Nuke scripts. They got multiple node definitions, which
 are actially arguments for a node constructor written out in TCL. Consider this ubiquitous fragment for a
@@ -58,7 +57,7 @@ hypothetic SomeNode in your script:
       y_pos -10
     }
 
-and so on. You can use a +NodeProcessor+ to capture these node constructors right as they are being parsed.
+and so on. You can use a `NodeProcessor` to capture these node constructors right as they are being parsed.
 The advantage of this workflow is that the processor will discard all the nodes you don't need, saving time
 and memory.
 
@@ -100,12 +99,12 @@ nodes containing tracking data:
     parser.add_node_handler_class(PlanarTracker1_0)
     parser.add_node_handler_class(Tracker4)
 
-== Animation curves
+## Animation curves
 
 You can parse Nuke's animation curves using Tickly::Curve. This will give you a way to iterate over every defined keyframe.
 This currently does not happen automatically for things passing through the parser.
 
-== Contributing to tickly
+## Contributing to tickly
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
@@ -115,7 +114,7 @@ This currently does not happen automatically for things passing through the pars
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
-== Copyright
+## Copyright
 
 Copyright (c) 2013 Julik Tarkhanov. See LICENSE.txt for
 further details.
