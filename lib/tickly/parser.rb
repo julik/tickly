@@ -45,7 +45,7 @@ module Tickly
     ESC = 92.chr # Backslash (\)
     QUOTES = %w( " ' )
     
-    # TODO: this has to go into Bychar. We should not use exprs for flow control.
+    # TODO: this has to go into Bychar. We should not use exceptions for flow control.
     class R #:nodoc: :all
       def initialize(bychar)
         @bychar = bychar
@@ -157,7 +157,7 @@ module Tickly
         c = io.read_one_char
         if c.nil?
           raise Error, "The IO ran out before the end of a literal string"
-        elsif buf.length > 0 && last_char(buf) == ESC # If this char was escaped
+        elsif buf.length > 0 && buf[-1..-1] == ESC # If this char was escaped
           # Trim the escape character at the end of the buffer
           buf = buf[0..-2] 
           buf << c
@@ -167,10 +167,6 @@ module Tickly
           buf << c
         end
       end
-    end
-    
-    def last_char(str)
-      RUBY_VERSION < '1.9' ? str[-1].chr : str[-1]
     end
   end
 end
