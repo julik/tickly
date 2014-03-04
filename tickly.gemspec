@@ -5,23 +5,23 @@
 
 Gem::Specification.new do |s|
   s.name = "tickly"
-  s.version = "2.1.4"
+  s.version = "2.1.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Julik Tarkhanov"]
-  s.date = "2013-12-06"
+  s.date = "2014-03-04"
   s.description = "Parses the subset of the TCL grammar needed for Nuke scripts"
   s.email = "me@julik.nl"
   s.extra_rdoc_files = [
     "LICENSE.txt",
-    "README.rdoc"
+    "README.md"
   ]
   s.files = [
     ".document",
     ".travis.yml",
     "Gemfile",
     "LICENSE.txt",
-    "README.rdoc",
+    "README.md",
     "Rakefile",
     "lib/tickly.rb",
     "lib/tickly/curve.rb",
@@ -63,20 +63,20 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rake>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.7"])
-      s.add_development_dependency(%q<ruby-prof>, [">= 0"])
+      s.add_development_dependency(%q<ruby-prof>, ["= 0.13.0"])
     else
       s.add_dependency(%q<bychar>, ["~> 2"])
       s.add_dependency(%q<rake>, [">= 0"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.7"])
-      s.add_dependency(%q<ruby-prof>, [">= 0"])
+      s.add_dependency(%q<ruby-prof>, ["= 0.13.0"])
     end
   else
     s.add_dependency(%q<bychar>, ["~> 2"])
     s.add_dependency(%q<rake>, [">= 0"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.7"])
-    s.add_dependency(%q<ruby-prof>, [">= 0"])
+    s.add_dependency(%q<ruby-prof>, ["= 0.13.0"])
   end
 end
 
