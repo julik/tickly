@@ -15,6 +15,15 @@ x754 912.0731812 x755 913.7190552 916.0959473 918.1025391 920.0751953 922.189880
     assert_equal 754, result[7][0]
   end
   
+  def test_curve_plus
+    curve = [:c] + %w( curve+5 x1 987 x32 989.5999756 )
+      
+    p = Tickly::Curve.new(curve)
+    result = p.to_a
+    assert_kind_of Array, result
+    assert_equal [[1, 992.0], [32, 994.5999756]], result
+  end
+    
   def test_invalid_curves
     assert_raise Tickly::Curve::InvalidCurveError do
       Tickly::Curve.new([])
