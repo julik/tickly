@@ -105,8 +105,12 @@ You can parse Nuke's animation curves using Tickly::Curve. This will give you a 
 This currently does not happen automatically for things passing through the parser.
 
 ## Contributing to tickly
+
+Just like tracksperanto Tickly no longer ships with test data in gem format (since the test data amounts to
+to a substantial increase in package size). To obtain the test data, check the repo out.
  
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
+* Check out the latest master to obtain the test data.
+* Make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.
 * Start a feature/bugfix branch.

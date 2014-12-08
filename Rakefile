@@ -25,7 +25,11 @@ Jeweler::Tasks.new do |gem|
   gem.email = "me@julik.nl"
   gem.authors = ["Julik Tarkhanov"]
   # dependencies defined in Gemfile
+  
+  # Do not package test data
+  gem.files.exclude "test/test-data/*.*"
 end
+
 Jeweler::RubygemsDotOrgTasks.new
 
 require 'rake/testtask'
