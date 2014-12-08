@@ -1,9 +1,13 @@
 require 'stringio'
-require 'bychar'
 
 module Tickly
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
+    
+    # Used as an IO wrapper, previously used to hook into Bychar
+    class R < Struct.new(:io)
+      def read_one_char; io.read(1); end
+    end
     
     # Gets raised on invalid input
     class Error < RuntimeError
@@ -22,8 +26,8 @@ module Tickly
     #   expression = expressions[0] #=> ["2", "2"]
     def parse(io_or_str)
       bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
-      # Wrap the IO in a Bychar buffer to read faster
-      reader = R.new(Bychar.wrap(bare_io))
+      # Wrap the IO in a by-char buffer
+      reader = R.new(bare_io)
       # Use multiple_expressions = true so that the top-level parsed script is always an array
       # of expressions
       parse_expr(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
@@ -44,21 +48,6 @@ module Tickly
     TERMINATORS = ["\n", ";"]
     ESC = 92.chr # Backslash (\)
     QUOTES = %w( " ' )
-    
-    # TODO: this has to go into Bychar. We should not use exceptions for flow control.
-    class R #:nodoc: :all
-      def initialize(bychar)
-        @bychar = bychar
-      end
-      
-      def read_one_char
-        begin
-          c = @bychar.read_one_char!
-        rescue Bychar::EOF
-          nil
-        end
-      end
-    end
     
     # Package the expressions, stack and buffer.
     # We use a special flag to tell us whether we need multuple expressions.
