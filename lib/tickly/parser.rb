@@ -4,13 +4,22 @@ module Tickly
   # Simplistic, incomplete and most likely incorrect TCL parser
   class Parser
     
-    # Used as an IO wrapper, previously used to hook into Bychar
+    # Used as an IO wrapper, similar to what Bychar has.
     class R < Struct.new(:io)
       def read_one_char; io.read(1); end
     end
     
     # Gets raised on invalid input
     class Error < RuntimeError
+    end
+    
+    # Returns the given String or IO object wrapped in an object that has
+    # one method, read_one_char - that gets used by all the subsequent
+    # parsing steps
+    def wrap_io_or_string(io_or_str)
+      return io_or_str if io_or_str.respond_to?(:read_one_char) # Bychar or R
+      return R.new(io_or_str) if io_or_str.respond_to?(:read)
+      R.new(StringIO.new(io_or_str))
     end
     
     # Parses a piece of TCL and returns it converted into internal expression
@@ -25,11 +34,9 @@ module Tickly
     #   expressions = p.parse("2 + 2") #=> [["2", "+", "2"]]
     #   expression = expressions[0] #=> ["2", "2"]
     def parse(io_or_str)
-      bare_io = io_or_str.respond_to?(:read) ? io_or_str : StringIO.new(io_or_str)
-      # Wrap the IO in a by-char buffer
-      reader = R.new(bare_io)
-      # Use multiple_expressions = true so that the top-level parsed script is always an array
-      # of expressions
+      reader = wrap_io_or_string(io_or_str)
+      # Use multiple_expressions = true so that the top-level parsed script
+      # is always an array of expressions
       parse_expr(reader, stop_char = nil, stack_depth = 0, multiple_expressions = true)
     end
     
