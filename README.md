@@ -64,10 +64,10 @@ and memory.
 To match nodes you create Ruby classes matching the node classes by name. It doesn't matter if your
 custom node handler is inside a module since the processor will only use the last part of the name.
 
-For example, to capture every +SomeNode+ in your script:
+For example, to capture every `Blur` node in your script:
     
     # Remember, only the last part of the class name matters
-    class MyAwesomeDirtyScript::SomeNode
+    class MyAwesomeDirtyScript::Blur
       attr_reader :knobs
       def initialize(string_keyed_knobs_hash)
         @knobs = string_keyed_knobs_hash
@@ -83,10 +83,10 @@ For example, to capture every +SomeNode+ in your script:
     # Open the ginormous Nuke script
     file = File.open("/mnt/raid/nuke/scripts/HugeShot_123.nk")
     
-    e.parse(file) do | every_some_node |
-      # Everytime a SomeNode is found in the script it will be instantiated,
+    e.parse(file) do | blur_node |
+      # Everytime a Blur node is found in the script it will be instantiated,
       # and the knobs of the node will be passed to the constructor that you define
-      x_position = every_some_node.knobs["x_pos"]
+      kernel_size = blur_node.knobs["radius"]
       ...
     end
 
@@ -99,10 +99,38 @@ nodes containing tracking data:
     parser.add_node_handler_class(PlanarTracker1_0)
     parser.add_node_handler_class(Tracker4)
 
+Then you will need to handle switching between node types during parsing
+
+    e.parse(file) do | detected_node |
+      if detected_node.is_a?(Tracker3)
+	    ...
+	  else
+	    ...
+	  end
+    end
+
 ## Animation curves
 
-You can parse Nuke's animation curves using Tickly::Curve. This will give you a way to iterate over every defined keyframe.
+You can parse Nuke's animation curves using `Tickly::Curve`. This will give you a way to iterate over every defined keyframe.
 This currently does not happen automatically for things passing through the parser.
+
+## Tip: Speeding up parsing
+
+Normally, Tickly will accept strings and IO objects as sources. However if you want a little performance boost
+when parsing actual _files_ (or long IO objects that can be prebuffered) you should use it together
+with [bychar](http://rubygems.org/gems/bychar), version 3 or newer - like so:
+
+    p = Tickly::Parser.new
+    File.open("/mnt/raid/comps/s023_v23.nk", "r") do | f |
+	  expressions = p.parse(Bychar.wrap(f))
+	  ...
+	end
+	
+This way some of the IO will be prebuffered for you and give you improved reading performance when parsing.
+
+Tracksperanto does the bychar wrapping thing automatically, so no need to worry about that.
+
+
 
 ## Contributing to tickly
 
