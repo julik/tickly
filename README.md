@@ -109,6 +109,8 @@ Then you will need to handle switching between node types during parsing
 	  end
     end
 
+Node clones are not supported.
+
 ## Animation curves
 
 You can parse Nuke's animation curves using `Tickly::Curve`. This will give you a way to iterate over every defined keyframe.
