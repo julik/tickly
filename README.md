@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/julik/tickly.svg?branch=master)](https://travis-ci.org/julik/tickly)
+
 A highly simplistic TCL parser and evaluator (primarily designed for parsing Nuke scripts).
 It transforms the passed Nuke scripts into a TCL AST. 
 It also supports some cheap tricks to discard the nodes you are not interested in, since Nuke
