@@ -3,3 +3,7 @@ rvm:
   - 1.9.2
   - 1.9.3
   - 2.0.0-p247
+  - 2.1.5
+  - 2.2.2
+cache: bundler
+sudo: false

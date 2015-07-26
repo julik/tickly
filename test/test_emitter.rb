@@ -13,7 +13,7 @@ class TestEmitter < Test::Unit::TestCase
     assert_equal [:b, "2", "2"], se("2", "2")
   end
   
-  def test_emitter_be
+  def test_emitter_be_with_subexpression
     assert_equal [:b, [:c,"2", "2"]], se(le("2", "2"))
   end
   
