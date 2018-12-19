@@ -1,36 +1,5 @@
-# encoding: utf-8
-
-require 'rubygems'
-require 'bundler'
-require File.dirname(__FILE__) + "/lib/tickly"
-
-begin
-  Bundler.setup(:default, :development)
-rescue Bundler::BundlerError => e
-  $stderr.puts e.message
-  $stderr.puts "Run `bundle install` to install missing gems"
-  exit e.status_code
-end
-require 'rake'
-
-require 'jeweler'
-Jeweler::Tasks.new do |gem|
-  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
-  gem.version = Tickly::VERSION
-  gem.name = "tickly"
-  gem.homepage = "http://github.com/julik/tickly"
-  gem.license = "MIT"
-  gem.summary = %Q{Assists in parsing Nuke scripts in TCL}
-  gem.description = %Q{Parses the subset of the TCL grammar needed for Nuke scripts}
-  gem.email = "me@julik.nl"
-  gem.authors = ["Julik Tarkhanov"]
-  # dependencies defined in Gemfile
-  
-  # Do not package test data
-  gem.files.exclude "test/test-data/*.*"
-end
-
-Jeweler::RubygemsDotOrgTasks.new
+require "bundler/gem_tasks"
+require 'rake/testtask'
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
@@ -38,8 +7,6 @@ Rake::TestTask.new(:test) do |test|
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
 end
-
-task :default => :test
 
 require 'rdoc/task'
 Rake::RDocTask.new do |rdoc|
@@ -51,20 +18,26 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
-desc "Profiles the parser"
-task :profile do
-  require 'ruby-prof'
-  p = Tickly::NodeProcessor.new
-  f = File.open(File.dirname(__FILE__) + "/test/test-data/huge_nuke_tcl.tcl")
+desc "Benchmarks the parser"
+task :bench do
+  require File.dirname(__FILE__) + "/lib/tickly"
+  require 'benchmark'
 
-  RubyProf.start
-  p.parse(f) {|_| }
-  result = RubyProf.stop
-
-  # Print a call graph
-  File.open("profiler_calls.html", "w") do | f |
-    RubyProf::GraphHtmlPrinter.new(result).print(f)
+  class Tracker3
+    def initialize(n); end
   end
-  `open profiler_calls.html`
+
+  pe = Tickly::NodeProcessor.new
+  pe.add_node_handler_class(Tracker3)
+  
+  HUGE_SCRIPT = File.open(File.dirname(__FILE__) + "/test/test-data/huge_nuke_tcl.tcl", "rb")
+  Benchmark.bm do | runner |
+    runner.report("Parsing a huge Nuke script:") do
+      counter = 0
+      pe.parse(HUGE_SCRIPT) { counter += 1 }
+      HUGE_SCRIPT.rewind
+    end
+  end
 end
 
+task :default => [:test, :bench]
