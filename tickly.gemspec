@@ -23,8 +23,8 @@ Gem::Specification.new do |s|
   s.summary = "Assists in parsing Nuke scripts in TCL"
 
   s.specification_version = 4
-  s.add_development_dependency("rake", [">= 0"])
-  s.add_development_dependency("rdoc", ["~> 3.12"])
+  s.add_development_dependency("rake", "~> 10")
+  s.add_development_dependency("rdoc", "~> 3")
   s.add_development_dependency("ruby-prof")
   s.add_development_dependency("test-unit")
 end
