@@ -1,5 +1,0 @@
-rvm:
-  - 1.9.3
-  - 2.5.0
-cache: bundler
-sudo: false
