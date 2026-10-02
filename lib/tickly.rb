@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require File.dirname(__FILE__) + "/tickly/parser"
 require File.dirname(__FILE__) + "/tickly/evaluator"
 require File.dirname(__FILE__) + "/tickly/curve"

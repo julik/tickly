@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Tickly
   # Evaluates a passed TCL expression without expanding it's inner arguments.
   # The TCL should look like Nuke's node commands:

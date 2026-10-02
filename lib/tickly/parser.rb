@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # shareable_constant_value: literal
 require 'stringio'
 
@@ -92,7 +93,7 @@ module Tickly
       # A standard stack is an expression that does not evaluate to a string
       expressions = []
       stack = []
-      buf = ''
+      buf = +''
       
       loop do
         char = io.read_one_char
@@ -110,7 +111,7 @@ module Tickly
         elsif char == " " || char == "\n" # Space
           if buf.length > 0
             stack << buf
-            buf = ''
+            buf = +''
           end
           if TERMINATORS.include?(char) && stack.any? # Introduce a stack separator! This is a new line
             
@@ -149,7 +150,7 @@ module Tickly
     
     # Parse a string literal, in single or double quotes.
     def parse_str(io, stop_quote)
-      buf = ''
+      buf = +''
       loop do
         c = io.read_one_char
         if c.nil?

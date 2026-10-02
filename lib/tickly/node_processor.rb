@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Tickly
   # A combination of a Parser and an Evaluator
   # Evaluates a passed Nuke script without expanding it's inner arguments.

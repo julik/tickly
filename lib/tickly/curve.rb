@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # shareable_constant_value: literal
 module Tickly
   # A shorthand class for Nuke's animation curves.
