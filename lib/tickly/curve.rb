@@ -1,3 +1,4 @@
+# shareable_constant_value: literal
 module Tickly
   # A shorthand class for Nuke's animation curves.
   # Will convert a passed Curve expression into a set of values,

@@ -1,3 +1,4 @@
+# shareable_constant_value: literal
 require 'stringio'
 
 module Tickly
@@ -53,7 +54,7 @@ module Tickly
     private
     
     TERMINATORS = ["\n", ";"]
-    ESC = 92.chr # Backslash (\)
+    ESC = 92.chr.freeze # Backslash (\)
     QUOTES = %w( " ' )
     
     # Package the expressions, stack and buffer.
