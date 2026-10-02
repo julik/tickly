@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name = "tickly"
   s.version = Tickly::VERSION
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.required_ruby_version = ">= 2.6"
   s.require_paths = ["lib"]
   s.authors = ["Julik Tarkhanov"]
   s.date = Time.now.utc.strftime("%Y-%m-%d")
@@ -19,10 +19,8 @@ Gem::Specification.new do |s|
   end
   s.homepage = "http://github.com/julik/tickly"
   s.licenses = ["MIT"]
-  s.rubygems_version = "2.2.2"
   s.summary = "Assists in parsing Nuke scripts in TCL"
 
-  s.specification_version = 4
   s.add_development_dependency("rake")
   s.add_development_dependency("rdoc")
   s.add_development_dependency("benchmark")
